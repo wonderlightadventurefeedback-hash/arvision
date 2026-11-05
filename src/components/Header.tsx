@@ -112,6 +112,9 @@ export const Header: React.FC = () => {
   }, []);
 
   // Filter products for autocomplete dropdown
+  const trimmedSearch = searchQuery.trim().toLowerCase();
+  const isAdminSearchQuery = trimmedSearch === '/admin' || trimmedSearch === 'admin' || trimmedSearch === 'admin portal';
+
   const searchResults = searchQuery.trim()
     ? products
         .filter(
@@ -338,6 +341,16 @@ export const Header: React.FC = () => {
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (isAdminSearchQuery) {
+                        e.preventDefault();
+                        setActiveView('admin-portal');
+                        setSearchQuery('');
+                        setIsSearchFocused(false);
+                      }
+                    }
+                  }}
                   onFocus={() => {
                     setIsSearchFocused(true);
                     setIsSearchOpen(true);
@@ -364,11 +377,38 @@ export const Header: React.FC = () => {
               </div>
 
               {/* Autocomplete Dropdown */}
-              {isSearchFocused && searchResults.length > 0 && (
+              {isSearchFocused && (searchResults.length > 0 || isAdminSearchQuery) && (
                 <div className="absolute top-full right-0 mt-3 w-72 sm:w-80 bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/15 py-2 z-50 animate-fade-in text-slate-100">
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-white/10">
-                    Product Matches ({searchResults.length})
-                  </div>
+                  {isAdminSearchQuery && (
+                    <div
+                      onClick={() => {
+                        setActiveView('admin-portal');
+                        setSearchQuery('');
+                        setIsSearchFocused(false);
+                      }}
+                      className="flex items-center gap-3 px-3 py-2.5 hover:bg-purple-950/70 bg-purple-950/40 cursor-pointer transition border-b border-purple-500/20 text-purple-200"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-purple-900/60 flex items-center justify-center border border-purple-400/40 shrink-0">
+                        <ShieldCheck className="w-4 h-4 text-purple-300" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-bold text-white flex items-center gap-1.5">
+                          Admin Portal
+                          <span className="text-[10px] bg-purple-500/30 text-purple-200 px-1.5 py-0.2 rounded font-mono font-semibold">/admin</span>
+                        </div>
+                        <div className="text-[11px] text-purple-300/80 truncate">
+                          Enter store management dashboard
+                        </div>
+                      </div>
+                      <span className="text-[11px] text-cyan-400 font-semibold shrink-0">Open →</span>
+                    </div>
+                  )}
+
+                  {searchResults.length > 0 && (
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-white/10">
+                      Product Matches ({searchResults.length})
+                    </div>
+                  )}
                   {searchResults.map((product) => (
                     <div
                       key={product.id}

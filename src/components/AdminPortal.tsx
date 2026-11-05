@@ -132,8 +132,7 @@ export const AdminPortal: React.FC = () => {
     openPDP,
   } = useStore();
 
-  // Navigation State - 14 distinct modules
-  const [activeTab, setActiveTab] = useState<
+  type AdminTabType =
     | 'dashboard'
     | 'products'
     | 'categories'
@@ -147,8 +146,45 @@ export const AdminPortal: React.FC = () => {
     | 'media'
     | 'analytics'
     | 'users'
-    | 'settings'
-  >('dashboard');
+    | 'settings';
+
+  const getInitialAdminTab = (): AdminTabType => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab')?.toLowerCase() as AdminTabType;
+      const validTabs: AdminTabType[] = [
+        'dashboard',
+        'products',
+        'categories',
+        'inventory',
+        'orders',
+        'appointments',
+        'customers',
+        'banners',
+        'promotions',
+        'content',
+        'media',
+        'analytics',
+        'users',
+        'settings',
+      ];
+      if (tabParam && validTabs.includes(tabParam)) {
+        return tabParam;
+      }
+    }
+    return 'dashboard';
+  };
+
+  // Navigation State - 14 distinct modules
+  const [activeTab, setActiveTabState] = useState<AdminTabType>(getInitialAdminTab);
+
+  const setActiveTab = (tab: AdminTabType) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') {
+      const url = tab === 'dashboard' ? '/admin' : `/admin?tab=${tab}`;
+      window.history.replaceState({ tab }, '', url);
+    }
+  };
 
   // Search & Filters
   const [productSearch, setProductSearch] = useState('');

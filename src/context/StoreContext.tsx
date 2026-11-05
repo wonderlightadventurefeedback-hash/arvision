@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   Product,
   ProductVariant,
@@ -570,8 +570,107 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
   ]);
 
-  // View & UI Navigation States
-  const [activeView, setActiveView] = useState<'storefront' | 'design-board' | 'admin-portal'>('storefront');
+  // View & UI Navigation States (Synchronized with URL for direct /admin and / routes)
+  const getInitialView = (): 'storefront' | 'design-board' | 'admin-portal' => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+
+      if (
+        path === '/admin' ||
+        path.startsWith('/admin/') ||
+        hash === '#admin' ||
+        hash === '#/admin' ||
+        search.includes('view=admin') ||
+        search.includes('route=admin') ||
+        search.includes('tab=admin')
+      ) {
+        return 'admin-portal';
+      }
+
+      if (
+        path === '/design-board' ||
+        path.startsWith('/design-board/') ||
+        hash === '#design-board' ||
+        hash === '#/design-board'
+      ) {
+        return 'design-board';
+      }
+    }
+    return 'storefront';
+  };
+
+  const [activeView, setActiveViewState] = useState<'storefront' | 'design-board' | 'admin-portal'>(getInitialView);
+
+  const setActiveView = useCallback((view: 'storefront' | 'design-board' | 'admin-portal') => {
+    setActiveViewState(view);
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+      const currentHash = window.location.hash.toLowerCase();
+
+      if (view === 'admin-portal') {
+        if (currentPath !== '/admin' && currentHash !== '#/admin' && currentHash !== '#admin') {
+          window.history.pushState({ view: 'admin-portal' }, '', '/admin');
+        }
+      } else if (view === 'design-board') {
+        if (currentPath !== '/design-board' && currentHash !== '#/design-board') {
+          window.history.pushState({ view: 'design-board' }, '', '/design-board');
+        }
+      } else if (view === 'storefront') {
+        if (
+          currentPath === '/admin' ||
+          currentPath.startsWith('/admin') ||
+          currentPath === '/design-board' ||
+          currentHash === '#/admin' ||
+          currentHash === '#admin'
+        ) {
+          window.history.pushState({ view: 'storefront' }, '', '/');
+        }
+      }
+    }
+  }, []);
+
+  // Sync active view with browser back/forward buttons and hash navigation
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+
+      if (
+        path === '/admin' ||
+        path.startsWith('/admin/') ||
+        hash === '#admin' ||
+        hash === '#/admin' ||
+        search.includes('view=admin') ||
+        search.includes('route=admin') ||
+        search.includes('tab=admin')
+      ) {
+        setActiveViewState('admin-portal');
+      } else if (
+        path === '/design-board' ||
+        path.startsWith('/design-board/') ||
+        hash === '#design-board' ||
+        hash === '#/design-board'
+      ) {
+        setActiveViewState('design-board');
+      } else {
+        setActiveViewState('storefront');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
+
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
