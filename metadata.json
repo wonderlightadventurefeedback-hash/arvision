@@ -1,0 +1,6 @@
+{
+  "name": "AR VISION Eye Care - Optical E-Commerce & Design Board",
+  "description": "Enterprise optical e-commerce platform and 45-screen UX/UI design board for AR VISION Eye Care with eyewear catalog, prescription management, lens builder, and 27-module admin portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

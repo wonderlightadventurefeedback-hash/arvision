@@ -1,0 +1,996 @@
+# AR VISION EYE CARE
+# COMPLETE ENTERPRISE OPTICAL E-COMMERCE WEBSITE — MASTER DEVELOPMENT PROMPT
+
+## PROJECT OVERVIEW
+
+Upgrade my existing website into a professional, modern, full-stack optical e-commerce platform for **AR VISION Eye Care**, with feature breadth, shopping experience, and technology comparable to Lenskart.
+
+Reference website: https://www.lenskart.com
+
+Use the previously supplied AR VISION Eye Care 45-screen UI/UX design board as a visual reference.
+
+The final website must provide a complete optical shopping experience, including eyewear shopping, prescription management, virtual try-on, lens customization, promotional campaigns, real-time pricing, order management, and a powerful administrator dashboard.
+
+IMPORTANT: This is an existing website upgrade project, NOT a website redevelopment project.
+
+==================================================
+## 1. CRITICAL RULE — PRESERVE MY EXISTING WEBSITE
+==================================================
+
+Before starting development, inspect the complete existing project.
+
+Understand:
+- Existing frontend architecture.
+- Existing backend architecture.
+- Existing database.
+- Current homepage.
+- Existing components.
+- Existing pages and routes.
+- Existing CSS and design system.
+- Current authentication.
+- Existing integrations.
+- Existing working features.
+
+STRICT REQUIREMENTS:
+
+1. Do not redesign my existing website.
+2. Do not replace my existing homepage.
+3. Do not change the existing color palette.
+4. Do not change existing typography.
+5. Do not unnecessarily modify existing layouts.
+6. Do not remove existing components.
+7. Do not delete existing pages.
+8. Do not break existing routes.
+9. Do not remove existing functionality.
+10. Do not rebuild the project from scratch.
+11. Reuse existing code and components wherever possible.
+12. Extend existing backend and database architecture.
+13. Add new features without breaking old functionality.
+14. Do not change existing technology unnecessarily.
+15. Never delete existing database records without explicit approval.
+
+If any existing design modification is necessary, explain the reason and request approval before making it.
+
+==================================================
+## 2. BRAND IDENTITY
+==================================================
+
+Brand: AR VISION Eye Care
+
+Create a professional and trustworthy optical retail experience.
+
+Maintain the existing brand identity and design language.
+
+Use high-quality eyewear product photography, professional promotional imagery, clean layouts, elegant typography, responsive components, smooth transitions and consistent visual presentation.
+
+All new components must visually match the existing website.
+
+==================================================
+## 3. COMPLETE HOMEPAGE MANAGEMENT
+==================================================
+
+Upgrade the existing homepage with dynamic, administrator-controlled content.
+
+Do not unnecessarily replace the current homepage structure.
+
+Add the following configurable sections wherever they fit naturally into the existing design.
+
+### A. Announcement Bar
+
+Display:
+- Festival offers.
+- Special discounts.
+- Free shipping announcements.
+- Limited-time deals.
+- New collection announcements.
+- Important store notifications.
+
+Allow administrators to update the announcement text, destination and schedule.
+
+### B. Main Hero Banner Slider
+
+Create a professional, full-width image slider similar to the promotional header experience of large optical e-commerce websites.
+
+Features:
+- Multiple promotional slides.
+- Automatic sliding every 4–6 seconds.
+- Smooth transitions.
+- Previous and next arrows.
+- Pagination dots.
+- Manual slide navigation.
+- Mobile swipe support.
+- Separate desktop and mobile images.
+- Responsive image cropping.
+- Clickable banners.
+- Product and category destinations.
+- Optional headline, subtitle and CTA button.
+- Pause on hover.
+- Reduced-motion accessibility support.
+
+The administrator must control every slide from the Admin Portal.
+
+### C. Dynamic Festival Banner
+
+Show festival promotions such as:
+- Diwali.
+- Holi.
+- Dussehra.
+- Christmas.
+- New Year.
+- Valentine's Day.
+- Independence Day.
+- Republic Day.
+- Anniversary Sale.
+- Summer Sale.
+- Monsoon Sale.
+- Back-to-School Sale.
+- Custom promotional campaigns.
+
+### D. Mid-Homepage Advertisements
+
+Allow promotional banners between:
+- Category sections.
+- Product collections.
+- Best sellers.
+- New arrivals.
+- Brand collections.
+- Recommended products.
+
+### E. Bottom Promotional Sections
+
+Allow administrators to display:
+- Special offers.
+- Festival campaigns.
+- Product advertisements.
+- Eye-care services.
+- New arrivals.
+- Brand promotions.
+- Newsletter campaigns.
+
+### F. Dynamic Homepage Layout
+
+Create an admin-controlled section manager.
+
+Administrators must be able to:
+- Enable or disable sections.
+- Change section order.
+- Upload section banners.
+- Select product collections.
+- Set display positions.
+- Schedule content.
+- Preview desktop and mobile layouts.
+
+All homepage content must be database-driven.
+
+==================================================
+## 4. COMPLETE PRODUCT MANAGEMENT
+==================================================
+
+Create a professional product management system in the Admin Portal.
+
+Support:
+- Eyeglasses.
+- Sunglasses.
+- Prescription glasses.
+- Computer glasses.
+- Blue-light-filtering glasses.
+- Reading glasses.
+- Kids' glasses.
+- Contact lenses.
+- Lens care products.
+- Optical accessories.
+
+Administrator capabilities:
+
+- Add products.
+- Edit products.
+- Delete or archive products safely.
+- Upload multiple product images.
+- Add product videos.
+- Add product descriptions.
+- Add product specifications.
+- Assign brands.
+- Assign categories.
+- Configure SKUs.
+- Configure frame sizes.
+- Configure frame shapes.
+- Configure materials.
+- Configure colors.
+- Configure product variants.
+- Set regular prices.
+- Set selling prices.
+- Set discounts.
+- Manage product stock.
+- Publish or unpublish products.
+- Schedule product publication.
+- Preview products before publishing.
+
+### Real-Time Product Publishing
+
+When an administrator publishes a product:
+
+1. Save product information in the database.
+2. Display it automatically on the customer website.
+3. Update relevant category pages.
+4. Update search results.
+5. Update homepage collections when selected.
+6. Update product details and product recommendations.
+7. Refresh relevant caches.
+8. Notify connected storefront sessions of updates.
+
+Do not require a website redeployment when a product is added or edited.
+
+Draft and unpublished products must remain hidden from customers.
+
+==================================================
+## 5. REAL-TIME PRICE MANAGEMENT
+==================================================
+
+Create a centralized pricing management system.
+
+Every product must support:
+
+- Original price.
+- Selling price.
+- Discount percentage.
+- Fixed discount amount.
+- Scheduled price changes.
+- Variant-specific prices.
+- Lens customization charges.
+- Applicable taxes.
+- Shipping charges where applicable.
+
+Example:
+
+Original Price: ₹2,000
+Selling Price: ₹1,499
+Discount: 25% OFF
+
+The website must calculate the percentage correctly.
+
+The Admin Portal is the source of truth for all product prices.
+
+When the administrator changes a product price:
+- Update the product page.
+- Update category cards.
+- Update search results.
+- Update cart calculations.
+- Validate the latest price during checkout.
+- Refresh relevant customer sessions.
+
+Use WebSockets, Server-Sent Events, or an appropriate real-time update mechanism.
+
+Use the same server-side pricing service throughout the shopping and checkout process.
+
+Preserve historical prices in completed orders and invoices.
+
+Never trust browser-submitted prices.
+
+==================================================
+## 6. COMPLETE PROMOTION AND DISCOUNT ENGINE
+==================================================
+
+Create a dedicated Offers and Promotions Management module.
+
+Allow administrators to create:
+
+- 10% OFF.
+- 20% OFF.
+- 30% OFF.
+- 40% OFF.
+- 50% OFF.
+- Fixed amount discounts.
+- Buy One Get One Free.
+- Buy One Get One at 50% OFF.
+- Buy Two Get One Free.
+- Buy X Get Y offers.
+- Bundle offers.
+- Category-wide discounts.
+- Brand-specific discounts.
+- Product-specific discounts.
+- Minimum cart value offers.
+- Quantity-based discounts.
+- First-order discounts.
+- Coupon-code promotions.
+- Free shipping offers.
+- Customer-segment offers.
+
+### BOGO Promotion Rules
+
+Allow the administrator to configure:
+- Qualifying products.
+- Eligible categories.
+- Purchase quantity.
+- Reward quantity.
+- Free or discounted reward.
+- Maximum reward limit.
+- Same-product or different-product rewards.
+- Promotion start and end dates.
+- Stock requirements.
+- Promotion stacking rules.
+
+Automatically calculate eligible rewards in the cart and checkout.
+
+Clearly display promotional conditions to customers.
+
+Prevent invalid or incompatible promotions from stacking.
+
+==================================================
+## 7. FESTIVAL CAMPAIGN MANAGEMENT
+==================================================
+
+Create a complete Festival and Campaign Management dashboard.
+
+Admin must be able to:
+
+- Create a campaign.
+- Name the campaign.
+- Upload desktop banners.
+- Upload mobile banners.
+- Add campaign descriptions.
+- Configure promotional prices.
+- Select products.
+- Select categories.
+- Configure coupon codes.
+- Set campaign dates.
+- Set start and end times.
+- Schedule automatic activation.
+- Schedule automatic expiration.
+- Preview campaigns.
+- Publish and pause campaigns.
+- Track campaign usage.
+
+When a campaign becomes active, automatically show the relevant promotional banners and eligible discounts on the website.
+
+When it expires, automatically remove the campaign's promotional pricing and banners unless another valid offer applies.
+
+Use the Asia/Kolkata time zone for campaign schedules.
+
+==================================================
+## 8. DYNAMIC BANNER AND ADVERTISEMENT MANAGEMENT
+==================================================
+
+Create a dedicated Banner Management dashboard.
+
+Admin controls:
+
+- Upload desktop banner.
+- Upload mobile banner.
+- Add title.
+- Add subtitle.
+- Add promotional text.
+- Add CTA button.
+- Select destination.
+- Choose homepage position.
+- Change display order.
+- Schedule publication.
+- Activate or deactivate.
+- Preview banner.
+- Delete or archive banners.
+
+Banner positions:
+1. Top announcement bar.
+2. Main hero slider.
+3. Below-hero promotional banner.
+4. Between category sections.
+5. Between product collections.
+6. Mid-homepage campaign.
+7. Before customer reviews.
+8. Near the bottom of homepage.
+9. Optional footer campaign.
+
+Support multiple slides, automatic transitions, touch gestures, responsive images and smooth animations.
+
+Do not hardcode promotional banners.
+
+==================================================
+## 9. COMPLETE PRODUCT DISCOVERY
+==================================================
+
+Implement advanced shopping features:
+
+- Product search.
+- Search autocomplete.
+- Typo-tolerant search.
+- Brand filtering.
+- Price filtering.
+- Gender filtering.
+- Frame-shape filtering.
+- Frame-material filtering.
+- Color filtering.
+- Size filtering.
+- Product comparison.
+- Product sorting.
+- Wishlist.
+- Recently viewed products.
+- Related products.
+- Best sellers.
+- New arrivals.
+- Personalized recommendations.
+- Product ratings.
+- Customer reviews.
+
+Make the catalog fully connected to the database.
+
+==================================================
+## 10. VIRTUAL TRY-ON AND ADVANCED OPTICAL TECHNOLOGY
+==================================================
+
+Implement actual camera-based virtual eyewear try-on.
+
+Features:
+- Camera access with user permission.
+- Face landmark detection.
+- Face tracking.
+- Frame alignment.
+- Frame scaling and positioning.
+- Product switching.
+- Color switching.
+- 3D eyewear rendering where assets are available.
+- Photo upload with consent.
+- Save and share preview when requested.
+- Mobile and desktop support.
+- Camera permission error handling.
+- Unsupported-device fallback.
+
+Use a suitable AR SDK or MediaPipe with Three.js/WebGL.
+
+Do not create a fake static virtual try-on demonstration.
+
+Provide appropriate privacy controls and explain that virtual fit is approximate.
+
+==================================================
+## 11. PRESCRIPTION MANAGEMENT
+==================================================
+
+Create a complete prescription workflow.
+
+Support:
+- Prescription image upload.
+- Manual prescription entry.
+- Right-eye values.
+- Left-eye values.
+- SPH.
+- CYL.
+- AXIS.
+- ADD.
+- PD.
+- Saved prescriptions.
+- Prescription selection during checkout.
+- Prescription review by authorized staff.
+- Prescription correction requests.
+
+Securely store prescription information and documents.
+
+Use private storage, authorization, encryption in transit and appropriate retention policies.
+
+Never generate medical prescriptions from AI or selfies.
+
+==================================================
+## 12. LENS CUSTOMIZATION
+==================================================
+
+Allow customers to select available lens options:
+
+- Single Vision.
+- Bifocal.
+- Progressive.
+- Non-prescription.
+- Blue-light-filtering.
+- Photochromic.
+- Anti-reflective.
+- Polarized where compatible.
+- Lens thickness.
+- Lens materials.
+- Additional coatings and treatments.
+
+Admin must be able to configure available lens types, compatibility, pricing and additional charges.
+
+Show updated lens prices before adding the configured product to the cart.
+
+==================================================
+## 13. SHOPPING CART AND CHECKOUT
+==================================================
+
+Implement a complete shopping system.
+
+Cart:
+- Add products.
+- Remove products.
+- Update quantities.
+- Change product variants.
+- Display selected lens configuration.
+- Apply valid coupon codes.
+- Show discounts.
+- Calculate subtotals.
+- Show taxes and delivery charges.
+- Display final payable amount.
+
+Checkout:
+- Customer information.
+- Address management.
+- PIN-code serviceability where supported.
+- Delivery information.
+- Payment selection.
+- Prescription selection.
+- Order summary.
+- Order confirmation.
+
+Payments:
+- Razorpay integration or compatible gateway.
+- Supported UPI payments.
+- Cards and net banking where enabled.
+- Cash on Delivery when configured.
+- Payment retry.
+- Failed payment handling.
+- Verified payment webhooks.
+- Refund processing.
+
+Never store raw card information or trust frontend payment-success messages.
+
+==================================================
+## 14. CUSTOMER ACCOUNT DASHBOARD
+==================================================
+
+Create a complete customer account system.
+
+Pages:
+- Registration.
+- Login.
+- Forgot password.
+- Profile.
+- Addresses.
+- My Orders.
+- Order Details.
+- Track Order.
+- Saved Prescriptions.
+- Wishlist.
+- Recently Viewed.
+- Appointment History.
+- Invoices.
+- Return Requests.
+- Refund Status.
+- Support Tickets.
+- Notification Preferences.
+
+Customers must be able to manage their information securely.
+
+==================================================
+## 15. ORDER MANAGEMENT
+==================================================
+
+Admin must be able to:
+
+- View all orders.
+- Search orders.
+- Filter orders.
+- View customer details.
+- View purchased products.
+- View lens configurations.
+- Review prescriptions with appropriate permissions.
+- Update order statuses.
+- Manage cancellations.
+- Manage returns.
+- Process eligible refunds.
+- Print invoices.
+- Add shipment information.
+- View payment status.
+- Maintain order activity history.
+
+Order lifecycle:
+
+Pending Payment → Confirmed → Prescription Review → Processing → Lens Preparation → Dispatched → Delivered.
+
+Support additional states such as cancelled, payment failed, return requested and refunded.
+
+Preserve completed order prices even when current product prices change.
+
+==================================================
+## 16. INVENTORY MANAGEMENT
+==================================================
+
+Create a database-connected inventory management system.
+
+Features:
+- Stock by SKU.
+- Stock by variant.
+- Stock adjustments.
+- Stock reservations.
+- Low-stock alerts.
+- Out-of-stock status.
+- Supplier management.
+- Purchase records.
+- Goods received.
+- Damaged stock.
+- Return stock.
+- Inventory history.
+- Inventory reports.
+- Multi-store architecture.
+
+When stock changes, update customer-facing availability.
+
+Use transactional stock reservations to prevent overselling.
+
+==================================================
+## 17. STORE LOCATOR AND EYE-CARE SERVICES
+==================================================
+
+Implement:
+
+- Store locator.
+- Google Maps or Mapbox integration.
+- Store address.
+- Business hours.
+- Contact information.
+- Directions.
+- Store services.
+- Eye-test appointment booking.
+- Appointment calendar.
+- Staff availability.
+- Rescheduling.
+- Cancellation.
+- Booking confirmation.
+- Appointment notifications.
+
+Optional home eye tests and home frame trials should only be enabled if AR VISION Eye Care actually provides these services.
+
+==================================================
+## 18. CUSTOMER SUPPORT AND WHATSAPP
+==================================================
+
+Integrate:
+
+- WhatsApp contact.
+- Official WhatsApp Business messaging where configured.
+- Email notifications.
+- SMS notifications.
+- Contact forms.
+- Customer support tickets.
+- FAQ management.
+- Order-related support.
+- Appointment reminders.
+- Shipping notifications.
+- Return and refund notifications.
+
+All external messaging integrations must use configured and authorized APIs.
+
+==================================================
+## 19. ADMIN PORTAL — COMPLETE BUSINESS CONTROL
+==================================================
+
+Create a professional, secure admin dashboard.
+
+Admin modules:
+
+1. Dashboard Overview.
+2. Product Management.
+3. Category Management.
+4. Brand Management.
+5. Product Pricing.
+6. Discount Management.
+7. Offers and Promotions.
+8. Festival Campaigns.
+9. Banner Management.
+10. Homepage Section Management.
+11. Inventory Management.
+12. Order Management.
+13. Customer Management.
+14. Prescription Management.
+15. Lens Configuration.
+16. Payment Management.
+17. Refund Management.
+18. Appointment Management.
+19. Store Management.
+20. Coupon Management.
+21. Reviews Management.
+22. Customer Support.
+23. Analytics and Reports.
+24. Staff Management.
+25. Roles and Permissions.
+26. Website Settings.
+27. Audit Logs.
+
+Dashboard analytics:
+- Total revenue.
+- Total orders.
+- Total customers.
+- Total products.
+- Active products.
+- Out-of-stock products.
+- Active campaigns.
+- Discount usage.
+- Best-selling products.
+- Sales performance.
+- Appointment statistics.
+
+Create separate permissions for the owner, administrator, product manager, inventory manager, order manager, optometry staff and customer support.
+
+All admin changes must be saved to the backend.
+
+==================================================
+## 20. AI AND SMART RECOMMENDATIONS
+==================================================
+
+Add optional AI-powered functionality:
+
+- Frame recommendations.
+- Product discovery assistant.
+- Natural-language product search.
+- Similar-product suggestions.
+- Related products.
+- Customer support assistant.
+- Personalized shopping suggestions.
+- Merchandising insights.
+- Demand forecasting when sufficient historical data exists.
+
+AI must use actual catalog and policy data.
+
+Do not invent stock availability, prices, medical advice or order statuses.
+
+==================================================
+## 21. TECHNOLOGY ARCHITECTURE
+==================================================
+
+Inspect and reuse the existing technology stack wherever possible.
+
+If new infrastructure is genuinely required, use compatible technologies such as:
+
+Frontend:
+- Next.js.
+- React.
+- TypeScript.
+- Tailwind CSS.
+- Framer Motion.
+
+Backend:
+- NestJS or structured Next.js APIs.
+- PostgreSQL.
+- Prisma ORM.
+- Redis.
+- Background workers.
+
+Search:
+- Meilisearch or OpenSearch.
+
+Storage:
+- Cloudinary.
+- S3-compatible private storage.
+
+Payments:
+- Razorpay.
+
+AR:
+- MediaPipe.
+- Three.js.
+- WebGL.
+- Specialized AR SDK when needed.
+
+Maps:
+- Google Maps Platform or Mapbox.
+
+Communications:
+- Official WhatsApp Business API.
+- Email and SMS providers.
+
+Testing:
+- Vitest.
+- Playwright.
+- API integration tests.
+
+Monitoring:
+- Sentry.
+- Server and database monitoring.
+
+Do not replace the existing stack simply to follow this list.
+
+==================================================
+## 22. DATABASE ARCHITECTURE
+==================================================
+
+Extend the existing database with appropriate models for:
+
+- Users.
+- Roles.
+- Permissions.
+- Addresses.
+- Products.
+- Product variants.
+- Categories.
+- Brands.
+- Product images.
+- Prices.
+- Inventory.
+- Lenses.
+- Lens options.
+- Prescriptions.
+- Carts.
+- Cart items.
+- Orders.
+- Order items.
+- Payments.
+- Refunds.
+- Shipments.
+- Promotions.
+- Promotion rules.
+- Coupons.
+- Campaigns.
+- Campaign banners.
+- Homepage sections.
+- Stores.
+- Suppliers.
+- Appointments.
+- Reviews.
+- Support tickets.
+- Notifications.
+- Audit logs.
+
+Create appropriate relationships, constraints, indexes and migrations.
+
+Use integer minor currency units or exact decimal representations for financial values.
+
+==================================================
+## 23. REAL-TIME SYSTEM
+==================================================
+
+Implement real-time updates for:
+
+- New products.
+- Product edits.
+- Product prices.
+- Discount changes.
+- Promotional campaigns.
+- Banner updates.
+- Inventory changes.
+- Order statuses.
+- Appointment updates.
+
+Use WebSockets, Server-Sent Events, cache invalidation or an appropriate combination.
+
+Ensure updates propagate across connected storefront sessions and all running application instances.
+
+The database must remain the source of truth.
+
+Do not require website redeployment for ordinary product, price, banner or promotion updates.
+
+==================================================
+## 24. SEO, SECURITY AND PERFORMANCE
+==================================================
+
+Implement:
+
+- Search engine optimization.
+- Product structured data.
+- Metadata.
+- Canonical URLs.
+- XML sitemap.
+- Optimized product images.
+- Lazy loading.
+- Responsive layouts.
+- Pagination.
+- Accessible forms.
+- Keyboard navigation.
+- Secure authentication.
+- Role-based permissions.
+- Input validation.
+- Rate limiting.
+- Secure file uploads.
+- Private prescription storage.
+- Payment verification.
+- Audit logging.
+- Backups.
+- Error monitoring.
+- Data retention and deletion controls.
+- Applicable Indian privacy and consumer protection requirements.
+
+==================================================
+## 25. MOBILE RESPONSIVENESS
+==================================================
+
+Ensure every page works correctly on:
+
+- Desktop.
+- Laptop.
+- Tablet.
+- Android smartphones.
+- iPhones.
+
+Implement responsive navigation, touch-friendly controls, mobile banner images, optimized galleries, responsive filters and a smooth mobile checkout.
+
+Preserve the existing mobile design wherever possible.
+
+==================================================
+## 26. DEVELOPMENT WORKFLOW
+==================================================
+
+Build the upgrades in controlled phases.
+
+PHASE 1:
+Inspect existing project and preserve its architecture and appearance.
+
+PHASE 2:
+Improve and connect the existing homepage and dynamic banner management.
+
+PHASE 3:
+Product catalog, product management and real-time pricing.
+
+PHASE 4:
+Promotions, discounts, BOGO and festival campaign management.
+
+PHASE 5:
+Customer authentication, wishlist, cart and checkout.
+
+PHASE 6:
+Admin dashboard, inventory and order management.
+
+PHASE 7:
+Prescription management and lens customization.
+
+PHASE 8:
+Virtual try-on and AI recommendations.
+
+PHASE 9:
+Store locator, appointments and notifications.
+
+PHASE 10:
+Security, testing, SEO, performance and deployment.
+
+At the end of each phase:
+- Test all new features.
+- Test existing functionality.
+- Fix regressions.
+- Verify desktop and mobile.
+- Document changes.
+- Obtain approval before risky migrations or destructive operations.
+
+==================================================
+## 27. FINAL ACCEPTANCE REQUIREMENTS
+==================================================
+
+The project is complete only when:
+
+1. The existing website design is preserved.
+2. All existing pages continue to work.
+3. Admin can add and publish products.
+4. Published products appear automatically on the website.
+5. Admin can update product prices.
+6. Updated prices appear consistently.
+7. Admin can configure discounts.
+8. BOGO offers calculate correctly.
+9. Festival campaigns activate and expire automatically.
+10. Promotional banners appear in their configured homepage positions.
+11. The main hero slider changes automatically.
+12. Mobile banners work correctly.
+13. Product search and filters work.
+14. Customer accounts work.
+15. Cart and checkout work.
+16. Payments are verified.
+17. Orders are saved and trackable.
+18. Prescriptions are handled securely.
+19. Admin can manage inventory.
+20. Appointment booking works.
+21. All admin permissions are enforced.
+22. No existing functionality is broken.
+23. All external dependencies are documented.
+24. Production deployment instructions are provided.
+
+Do not mark an unimplemented feature as completed.
+
+Do not replace real integrations with fake data or static mockups.
+
+==================================================
+## FINAL INSTRUCTION
+==================================================
+
+My objective is to upgrade my existing AR VISION Eye Care website into a complete, professional optical e-commerce ecosystem comparable in functional breadth to Lenskart.
+
+The existing website's identity, layout, design, pages and working functionality must remain intact.
+
+Build the new features around the existing website, not the other way around.
+
+The Admin Portal must control the entire business operation, including products, prices, discounts, promotions, festival banners, inventory, orders and customers.
+
+The customer-facing website must automatically reflect the latest valid database information.
+
+Deliver a stable, secure, maintainable, fully responsive and genuinely functional application.
+
+FIRST inspect my existing project. THEN prepare a development plan. DO NOT make destructive changes or redesign my website without my explicit approval.
