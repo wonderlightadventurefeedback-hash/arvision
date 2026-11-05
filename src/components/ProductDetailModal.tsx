@@ -29,6 +29,8 @@ export const ProductDetailModal: React.FC = () => {
     setIsTryOnModalOpen,
     setSelectedProductForTryOn,
     activeCategory,
+    getProductStock,
+    subscribeBackInStock,
   } = useStore();
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -37,6 +39,13 @@ export const ProductDetailModal: React.FC = () => {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [is360Active, setIs360Active] = useState(false);
   const [rotationDegree, setRotationDegree] = useState(0);
+
+  // Out of stock email alert state
+  const [subscriberEmail, setSubscriberEmail] = useState('');
+  const [subscribingStatus, setSubscribingStatus] = useState<{ type: 'idle' | 'success' | 'error'; message: string }>({
+    type: 'idle',
+    message: '',
+  });
 
   // Reset state whenever a new product is opened
   useEffect(() => {
@@ -73,6 +82,26 @@ export const ProductDetailModal: React.FC = () => {
 
   // Verified reviews
   const productReviews = MOCK_REVIEWS.filter((r) => r.productId === product.id);
+
+  // Real-time stock calculation
+  const availableStock = getProductStock(product);
+  const isOutOfStock = availableStock === 0;
+  const isLowStock = availableStock > 0 && availableStock <= (product.lowStockThreshold || 5);
+
+  const handleSubscribeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subscriberEmail.trim()) {
+      setSubscribingStatus({ type: 'error', message: 'Please enter your email address.' });
+      return;
+    }
+    const res = subscribeBackInStock(product.id, subscriberEmail, currentVariant?.id);
+    if (res.success) {
+      setSubscribingStatus({ type: 'success', message: res.message });
+      setSubscriberEmail('');
+    } else {
+      setSubscribingStatus({ type: 'error', message: res.message });
+    }
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -294,7 +323,7 @@ export const ProductDetailModal: React.FC = () => {
 
               {/* Pricing Block (Image 1 & 2) */}
               <div className="mb-6">
-                <div className="flex items-baseline gap-2.5">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <span className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                     ₹{product.sellingPrice.toLocaleString()}
                   </span>
@@ -304,6 +333,21 @@ export const ProductDetailModal: React.FC = () => {
                   <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 ml-1">
                     {product.discountPercentage}% OFF
                   </span>
+
+                  {/* Real-time Inventory Stock Badge */}
+                  {isOutOfStock ? (
+                    <span className="text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                      OUT OF STOCK
+                    </span>
+                  ) : isLowStock ? (
+                    <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-0.5 rounded-full animate-pulse">
+                      Only {availableStock} left in stock!
+                    </span>
+                  ) : (
+                    <span className="text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      {availableStock} Units Available
+                    </span>
+                  )}
                 </div>
                 {/* Free anti-glare lenses tag matching screenshot */}
                 <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider mt-1.5">
@@ -412,14 +456,52 @@ export const ProductDetailModal: React.FC = () => {
                 </div>
               </div>
 
-              {/* Desktop Big Solid Black CTA Button: SELECT LENSES (Image 2) */}
+              {/* Desktop Big Solid Black CTA Button: SELECT LENSES or Out of Stock Notification */}
               <div className="pt-2">
-                <button
-                  onClick={handleSelectLenses}
-                  className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs sm:text-sm uppercase tracking-widest transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2 rounded-none sm:rounded-xs"
-                >
-                  SELECT LENSES
-                </button>
+                {isOutOfStock ? (
+                  <div className="space-y-3">
+                    <button
+                      disabled
+                      className="w-full py-4 bg-slate-200 text-slate-500 font-bold text-xs sm:text-sm uppercase tracking-widest cursor-not-allowed flex items-center justify-center gap-2 rounded-none sm:rounded-xs border border-slate-300"
+                    >
+                      CURRENTLY OUT OF STOCK
+                    </button>
+
+                    {/* Out of Stock Email Subscription Box */}
+                    <div className="p-4 rounded-xl border border-rose-200 bg-rose-50/60 space-y-2">
+                      <div className="text-xs font-bold text-rose-900">
+                        Currently Out of Stock. Enter your email address to get notified when this product is available again.
+                      </div>
+                      <form onSubmit={handleSubscribeSubmit} className="flex flex-col sm:flex-row gap-2">
+                        <input
+                          type="email"
+                          value={subscriberEmail}
+                          onChange={(e) => setSubscriberEmail(e.target.value)}
+                          placeholder="name@example.com"
+                          className="flex-1 px-3 py-2 text-xs bg-white border border-slate-300 rounded-lg outline-none focus:border-rose-500 text-slate-800"
+                        />
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-lg transition cursor-pointer shrink-0"
+                        >
+                          Notify Me
+                        </button>
+                      </form>
+                      {subscribingStatus.message && (
+                        <p className={`text-[11px] font-semibold ${subscribingStatus.type === 'success' ? 'text-emerald-700' : 'text-rose-600'}`}>
+                          {subscribingStatus.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleSelectLenses}
+                    className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-bold text-xs sm:text-sm uppercase tracking-widest transition-colors shadow-md cursor-pointer flex items-center justify-center gap-2 rounded-none sm:rounded-xs"
+                  >
+                    SELECT LENSES
+                  </button>
+                )}
               </div>
 
               {/* Optical Millimeter Dimensions Breakdown */}
@@ -472,13 +554,22 @@ export const ProductDetailModal: React.FC = () => {
           </span>
         </div>
 
-        <button
-          onClick={handleSelectLenses}
-          className="px-6 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-colors shadow-md cursor-pointer flex items-center gap-1.5 rounded-xs active:scale-95"
-        >
-          <span>SELECT LENSES</span>
-          <span className="text-amber-400">→</span>
-        </button>
+        {isOutOfStock ? (
+          <button
+            disabled
+            className="px-5 py-3 bg-slate-300 text-slate-600 font-bold text-xs uppercase tracking-wider cursor-not-allowed rounded-xs"
+          >
+            OUT OF STOCK
+          </button>
+        ) : (
+          <button
+            onClick={handleSelectLenses}
+            className="px-6 py-3 bg-black hover:bg-neutral-800 text-white font-bold text-xs uppercase tracking-widest transition-colors shadow-md cursor-pointer flex items-center gap-1.5 rounded-xs active:scale-95"
+          >
+            <span>SELECT LENSES</span>
+            <span className="text-amber-400">→</span>
+          </button>
+        )}
       </div>
 
       {/* 3. Interactive Frame Size Guide Modal */}

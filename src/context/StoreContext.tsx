@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Product,
   ProductVariant,
@@ -27,6 +27,12 @@ import {
   HtoTimeSlot,
   UserProfile,
   GiftCardClaimRecord,
+  AdPoster,
+  HomepageVideo,
+  PaymentTransaction,
+  InventoryMovement,
+  BackInStockSubscription,
+  StockNotificationLog,
 } from '../types';
 import {
   INITIAL_PRODUCTS,
@@ -46,6 +52,12 @@ import {
   INITIAL_HTO_APPOINTMENTS,
   INITIAL_USER_PROFILE,
   VALID_GIFT_CARDS,
+  INITIAL_AD_POSTERS,
+  INITIAL_HOMEPAGE_VIDEOS,
+  INITIAL_PAYMENT_TRANSACTIONS,
+  INITIAL_INVENTORY_MOVEMENTS,
+  INITIAL_BACK_IN_STOCK_SUBSCRIPTIONS,
+  INITIAL_STOCK_NOTIFICATIONS,
 } from '../data/mockData';
 
 
@@ -238,6 +250,35 @@ interface StoreContextType {
   setIsAccountMenuOpen: (open: boolean) => void;
   activeAccountModal: 'claim-gift-card' | 'account-information' | 'orders' | 'prescription' | 'store-credit' | 'addresses' | '3d-models' | 'notifications' | null;
   setActiveAccountModal: (modal: 'claim-gift-card' | 'account-information' | 'orders' | 'prescription' | 'store-credit' | 'addresses' | '3d-models' | 'notifications' | null) => void;
+
+  // 1. Dynamic Advertisement Poster Management & Scheduler
+  adPosters: AdPoster[];
+  activeScheduledPoster: AdPoster | null;
+  addAdPoster: (poster: Omit<AdPoster, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateAdPoster: (id: string, updates: Partial<AdPoster>) => void;
+  deleteAdPoster: (id: string) => void;
+
+  // 2. Dynamic Homepage Hero Video Management & Scheduler
+  homepageVideos: HomepageVideo[];
+  activeScheduledVideo: HomepageVideo | null;
+  addHomepageVideo: (video: Omit<HomepageVideo, 'id' | 'createdAt'>) => void;
+  updateHomepageVideo: (id: string, updates: Partial<HomepageVideo>) => void;
+  deleteHomepageVideo: (id: string) => void;
+
+  // 3. Online Payments & Transactions
+  paymentTransactions: PaymentTransaction[];
+  recordPaymentTransaction: (tx: PaymentTransaction) => void;
+  processRefund: (transactionId: string, reason: string) => void;
+
+  // 4. Real-time Inventory Movements & Stock Controls
+  inventoryMovements: InventoryMovement[];
+  adjustProductStock: (productId: string, variantId: string | undefined, delta: number, reason: string) => void;
+  getProductStock: (product: Product) => number;
+
+  // 5. Out-of-Stock Email Notifications & Restock Alerts
+  backInStockSubscriptions: BackInStockSubscription[];
+  subscribeBackInStock: (productId: string, customerEmail: string, variantId?: string) => { success: boolean; message: string };
+  stockNotificationLogs: StockNotificationLog[];
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -721,6 +762,109 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     'claim-gift-card' | 'account-information' | 'orders' | 'prescription' | 'store-credit' | 'addresses' | '3d-models' | 'notifications' | null
   >(null);
 
+  // =========================================================================
+  // 1. Dynamic Advertisement Posters with Scheduling State
+  // =========================================================================
+  const [adPosters, setAdPosters] = useState<AdPoster[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_ad_posters');
+      return saved ? JSON.parse(saved) : INITIAL_AD_POSTERS;
+    } catch {
+      return INITIAL_AD_POSTERS;
+    }
+  });
+
+  // =========================================================================
+  // 2. Dynamic Homepage Videos with Duration Rotation State
+  // =========================================================================
+  const [homepageVideos, setHomepageVideos] = useState<HomepageVideo[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_homepage_videos');
+      return saved ? JSON.parse(saved) : INITIAL_HOMEPAGE_VIDEOS;
+    } catch {
+      return INITIAL_HOMEPAGE_VIDEOS;
+    }
+  });
+
+  // =========================================================================
+  // 3. Payment Transactions State
+  // =========================================================================
+  const [paymentTransactions, setPaymentTransactions] = useState<PaymentTransaction[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_payment_transactions');
+      return saved ? JSON.parse(saved) : INITIAL_PAYMENT_TRANSACTIONS;
+    } catch {
+      return INITIAL_PAYMENT_TRANSACTIONS;
+    }
+  });
+
+  // =========================================================================
+  // 4. Real-time Inventory Movement & Stock History State
+  // =========================================================================
+  const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_inventory_movements');
+      return saved ? JSON.parse(saved) : INITIAL_INVENTORY_MOVEMENTS;
+    } catch {
+      return INITIAL_INVENTORY_MOVEMENTS;
+    }
+  });
+
+  // =========================================================================
+  // 5. Out-of-Stock Email Subscriptions & Notifications
+  // =========================================================================
+  const [backInStockSubscriptions, setBackInStockSubscriptions] = useState<BackInStockSubscription[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_back_in_stock_subscriptions');
+      return saved ? JSON.parse(saved) : INITIAL_BACK_IN_STOCK_SUBSCRIPTIONS;
+    } catch {
+      return INITIAL_BACK_IN_STOCK_SUBSCRIPTIONS;
+    }
+  });
+
+  const [stockNotificationLogs, setStockNotificationLogs] = useState<StockNotificationLog[]>(() => {
+    try {
+      const saved = localStorage.getItem('arvision_stock_notifications');
+      return saved ? JSON.parse(saved) : INITIAL_STOCK_NOTIFICATIONS;
+    } catch {
+      return INITIAL_STOCK_NOTIFICATIONS;
+    }
+  });
+
+  // Wall-clock ticker every 10 seconds so scheduled ads & videos rotate seamlessly
+  const [currentWallClock, setCurrentWallClock] = useState<Date>(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentWallClock(new Date());
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Sync to localStorage
+  useEffect(() => {
+    localStorage.setItem('arvision_ad_posters', JSON.stringify(adPosters));
+  }, [adPosters]);
+
+  useEffect(() => {
+    localStorage.setItem('arvision_homepage_videos', JSON.stringify(homepageVideos));
+  }, [homepageVideos]);
+
+  useEffect(() => {
+    localStorage.setItem('arvision_payment_transactions', JSON.stringify(paymentTransactions));
+  }, [paymentTransactions]);
+
+  useEffect(() => {
+    localStorage.setItem('arvision_inventory_movements', JSON.stringify(inventoryMovements));
+  }, [inventoryMovements]);
+
+  useEffect(() => {
+    localStorage.setItem('arvision_back_in_stock_subscriptions', JSON.stringify(backInStockSubscriptions));
+  }, [backInStockSubscriptions]);
+
+  useEffect(() => {
+    localStorage.setItem('arvision_stock_notifications', JSON.stringify(stockNotificationLogs));
+  }, [stockNotificationLogs]);
+
   // Sync to localStorage
   useEffect(() => {
     localStorage.setItem('wonderlix_products', JSON.stringify(products));
@@ -1045,13 +1189,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setAppliedCoupon(null);
   };
 
-  // Create Order with stock deduction & derived sales
+  // Create Order with real-time stock deduction, inventory movements & payment record
   const createOrder = (orderPayload: Omit<Order, 'id' | 'orderNumber' | 'createdAt' | 'statusHistory' | 'orderStatus' | 'prescriptionStatus'>): Order => {
     const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const orderNum = `WND-2026-${randomNum}`;
     const newOrder: Order = {
       ...orderPayload,
       id: `ord-${Date.now()}`,
-      orderNumber: `WND-2026-${randomNum}`,
+      orderNumber: orderNum,
       createdAt: new Date().toISOString(),
       orderStatus: 'Confirmed',
       statusHistory: [
@@ -1067,32 +1212,88 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         : 'Not Required',
     };
 
-    // Deduct stock from purchased product variants
+    // 1. Deduct stock from purchased product variants AND product level stock
+    const newMovements: InventoryMovement[] = [];
     setProducts((prev) =>
       prev.map((prod) => {
         const orderedItem = orderPayload.items.find((i) => i.product.id === prod.id);
         if (!orderedItem) return prod;
+
+        let updatedStock = prod.stock !== undefined ? Math.max(0, prod.stock - orderedItem.quantity) : undefined;
+
         const updatedVariants = prod.variants.map((v) => {
           if (v.id === orderedItem.selectedVariant.id) {
-            return { ...v, stock: Math.max(0, v.stock - orderedItem.quantity) };
+            const nextVStock = Math.max(0, v.stock - orderedItem.quantity);
+            return { ...v, stock: nextVStock };
           }
           return v;
         });
-        return { ...prod, variants: updatedVariants };
+
+        if (updatedStock === undefined) {
+          updatedStock = updatedVariants.reduce((s, v) => s + (v.stock || 0), 0);
+        }
+
+        newMovements.push({
+          id: `mov-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          productId: prod.id,
+          productName: prod.name,
+          sku: prod.sku,
+          variantId: orderedItem.selectedVariant.id,
+          variantName: orderedItem.selectedVariant.colorName,
+          type: 'sale',
+          quantityChange: -orderedItem.quantity,
+          remainingStock: updatedStock,
+          timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+          reason: `Verified Customer Order #${orderNum}`,
+          orderId: orderNum,
+          performedBy: 'Automated Stock Manager',
+        });
+
+        return { ...prod, stock: updatedStock, variants: updatedVariants };
       })
     );
 
+    if (newMovements.length > 0) {
+      setInventoryMovements((prev) => [...newMovements, ...prev]);
+    }
+
+    // 2. Automatically generate verified Payment Transaction record
+    const newTransaction: PaymentTransaction = {
+      id: `TXN-2026-${Math.floor(10000 + Math.random() * 90000)}`,
+      orderId: newOrder.id,
+      orderNumber: newOrder.orderNumber,
+      customerName: newOrder.customerName,
+      customerEmail: newOrder.customerEmail,
+      customerPhone: newOrder.customerPhone,
+      paymentDate: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      paymentMethod: newOrder.paymentMethod as any,
+      amount: newOrder.totalAmount,
+      currency: 'INR',
+      status: newOrder.paymentMethod === 'Cash on Delivery' ? 'Pending' : 'Successful',
+      refundStatus: 'None',
+      providerReference: `rzp_live_${Math.random().toString(36).substr(2, 9)}`,
+      items: [...newOrder.items],
+      deliveryAddress: { ...newOrder.shippingAddress },
+      createdAt: new Date().toISOString(),
+    };
+    setPaymentTransactions((prev) => [newTransaction, ...prev]);
+
     setOrders((prev) => [newOrder, ...prev]);
-    logActivity('Order Placed', 'Checkout', `Order #${newOrder.orderNumber} placed for ₹${newOrder.totalAmount}`);
+    logActivity('Order Placed', 'Checkout', `Order #${newOrder.orderNumber} placed for ₹${newOrder.totalAmount}. Inventory deducted.`);
     clearCart();
     setActiveTrackingOrder(newOrder);
     return newOrder;
   };
 
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus, note?: string) => {
+    let orderToCancel: Order | undefined;
+
     setOrders((prev) =>
       prev.map((ord) => {
         if (ord.id === orderId) {
+          if (newStatus === 'Cancelled' || newStatus === 'Refunded') {
+            orderToCancel = ord;
+          }
           return {
             ...ord,
             orderStatus: newStatus,
@@ -1109,6 +1310,55 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         return ord;
       })
     );
+
+    // If order was cancelled/refunded, restore stock and update payment transaction
+    if (orderToCancel && (newStatus === 'Cancelled' || newStatus === 'Refunded')) {
+      const restoredMovements: InventoryMovement[] = [];
+      setProducts((prev) =>
+        prev.map((prod) => {
+          const item = orderToCancel!.items.find((i) => i.product.id === prod.id);
+          if (!item) return prod;
+
+          let updatedStock = prod.stock !== undefined ? prod.stock + item.quantity : undefined;
+          const updatedVariants = prod.variants.map((v) => {
+            if (v.id === item.selectedVariant.id) {
+              return { ...v, stock: v.stock + item.quantity };
+            }
+            return v;
+          });
+
+          if (updatedStock === undefined) {
+            updatedStock = updatedVariants.reduce((s, v) => s + (v.stock || 0), 0);
+          }
+
+          restoredMovements.push({
+            id: `mov-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            productId: prod.id,
+            productName: prod.name,
+            sku: prod.sku,
+            variantId: item.selectedVariant.id,
+            type: 'cancellation_return',
+            quantityChange: +item.quantity,
+            remainingStock: updatedStock,
+            timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+            reason: `Order ${orderToCancel!.orderNumber} ${newStatus.toLowerCase()} - inventory returned to stock`,
+            orderId: orderToCancel!.orderNumber,
+            performedBy: currentAdminUser.name,
+          });
+
+          return { ...prod, stock: updatedStock, variants: updatedVariants };
+        })
+      );
+
+      if (restoredMovements.length > 0) {
+        setInventoryMovements((prev) => [...restoredMovements, ...prev]);
+      }
+
+      setPaymentTransactions((prev) =>
+        prev.map((t) => (t.orderId === orderId ? { ...t, refundStatus: 'Refunded', status: 'Refunded' } : t))
+      );
+    }
+
     logActivity('Order Status Changed', 'Orders', `Order ${orderId} moved to ${newStatus}`);
   };
 
@@ -1702,6 +1952,294 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     logActivity('Settings Updated', 'Settings', 'Updated global website settings');
   };
 
+  // =========================================================================
+  // 1. Dynamic Advertisement Poster Manager Methods & Rotation Scheduler
+  // =========================================================================
+  const addAdPoster = useCallback((poster: Omit<AdPoster, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newPoster: AdPoster = {
+      ...poster,
+      id: `poster-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    setAdPosters((prev) => [newPoster, ...prev]);
+    logActivity('Ad Poster Created', 'Advertisement Manager', `Created poster: ${poster.title}`);
+  }, []);
+
+  const updateAdPoster = useCallback((id: string, updates: Partial<AdPoster>) => {
+    setAdPosters((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p))
+    );
+    logActivity('Ad Poster Updated', 'Advertisement Manager', `Updated poster ID: ${id}`);
+  }, []);
+
+  const deleteAdPoster = useCallback((id: string) => {
+    setAdPosters((prev) => prev.filter((p) => p.id !== id));
+    logActivity('Ad Poster Deleted', 'Advertisement Manager', `Deleted poster ID: ${id}`, 'warning');
+  }, []);
+
+  // Calculate Active Scheduled Ad Poster
+  const activeScheduledPoster = useMemo<AdPoster | null>(() => {
+    const activeList = adPosters.filter((p) => p.status === 'active');
+    if (activeList.length === 0) return null;
+
+    const now = currentWallClock;
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const currentTimeStr = `${hours}:${minutes}`;
+    const todayDateStr = now.toISOString().split('T')[0];
+
+    // 1. Check exact time slot matches (e.g. 10:00 - 11:00)
+    const exactMatches = activeList.filter((p) => {
+      const dateValid = (!p.startDate || p.startDate <= todayDateStr) && (!p.endDate || p.endDate >= todayDateStr);
+      if (!dateValid) return false;
+      if (!p.startTime || !p.endTime) return true;
+      if (p.startTime <= p.endTime) {
+        return currentTimeStr >= p.startTime && currentTimeStr < p.endTime;
+      } else {
+        return currentTimeStr >= p.startTime || currentTimeStr < p.endTime;
+      }
+    });
+
+    if (exactMatches.length > 0) {
+      exactMatches.sort((a, b) => a.priority - b.priority);
+      return exactMatches[0];
+    }
+
+    // 2. Next eligible scheduled poster fallback
+    const upcoming = activeList.filter((p) => p.startTime && p.startTime > currentTimeStr);
+    if (upcoming.length > 0) {
+      upcoming.sort((a, b) => a.startTime.localeCompare(b.startTime));
+      return upcoming[0];
+    }
+
+    // 3. Fallback to first active poster
+    return activeList[0] || null;
+  }, [adPosters, currentWallClock]);
+
+  // =========================================================================
+  // 2. Dynamic Homepage Video Manager Methods & Wall-Clock Synchronized Rotation
+  // =========================================================================
+  const addHomepageVideo = useCallback((video: Omit<HomepageVideo, 'id' | 'createdAt'>) => {
+    const newVideo: HomepageVideo = {
+      ...video,
+      id: `vid-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+    setHomepageVideos((prev) => [...prev, newVideo]);
+    logActivity('Homepage Video Added', 'Video Manager', `Added hero video: ${video.title}`);
+  }, []);
+
+  const updateHomepageVideo = useCallback((id: string, updates: Partial<HomepageVideo>) => {
+    setHomepageVideos((prev) => prev.map((v) => (v.id === id ? { ...v, ...updates } : v)));
+    logActivity('Homepage Video Updated', 'Video Manager', `Updated hero video ID: ${id}`);
+  }, []);
+
+  const deleteHomepageVideo = useCallback((id: string) => {
+    setHomepageVideos((prev) => prev.filter((v) => v.id !== id));
+    logActivity('Homepage Video Deleted', 'Video Manager', `Deleted hero video ID: ${id}`, 'warning');
+  }, []);
+
+  // Calculate Active Scheduled Homepage Video (Wall-clock synchronized across all visitors)
+  const activeScheduledVideo = useMemo<HomepageVideo | null>(() => {
+    const activeList = homepageVideos
+      .filter((v) => v.status === 'active')
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (activeList.length === 0) return null;
+
+    const totalCycleMinutes = activeList.reduce((acc, v) => acc + (v.durationMinutes || 60), 0);
+    if (totalCycleMinutes <= 0) return activeList[0];
+
+    const nowMinutes = Math.floor(currentWallClock.getTime() / (60 * 1000));
+    const cycleOffset = nowMinutes % totalCycleMinutes;
+
+    let accumulated = 0;
+    for (const vid of activeList) {
+      const vidDuration = vid.durationMinutes || 60;
+      if (cycleOffset >= accumulated && cycleOffset < accumulated + vidDuration) {
+        return vid;
+      }
+      accumulated += vidDuration;
+    }
+
+    return activeList[0] || null;
+  }, [homepageVideos, currentWallClock]);
+
+  // =========================================================================
+  // 3. Payment Transactions & Process Refund
+  // =========================================================================
+  const recordPaymentTransaction = useCallback((tx: PaymentTransaction) => {
+    setPaymentTransactions((prev) => [tx, ...prev]);
+    logActivity('Payment Recorded', 'Payments', `Recorded payment ${tx.id} for ₹${tx.amount}`);
+  }, []);
+
+  const processRefund = useCallback((transactionId: string, reason: string) => {
+    let orderIdToRefund: string | undefined;
+
+    setPaymentTransactions((prev) =>
+      prev.map((tx) => {
+        if (tx.id === transactionId) {
+          orderIdToRefund = tx.orderId;
+          return {
+            ...tx,
+            status: 'Refunded',
+            refundStatus: 'Refunded',
+          };
+        }
+        return tx;
+      })
+    );
+
+    if (orderIdToRefund) {
+      updateOrderStatus(orderIdToRefund, 'Refunded', `Refund processed for ${transactionId}: ${reason}`);
+    }
+
+    logActivity('Refund Processed', 'Payments', `Transaction ${transactionId} refunded. Reason: ${reason}`, 'warning');
+  }, []);
+
+  // =========================================================================
+  // 4. Real-time Inventory & Stock Helpers
+  // =========================================================================
+  const getProductStock = useCallback((product: Product): number => {
+    if (product.stock !== undefined) return Math.max(0, product.stock);
+    if (product.variants && product.variants.length > 0) {
+      return product.variants.reduce((sum, v) => sum + Math.max(0, v.stock || 0), 0);
+    }
+    return 20;
+  }, []);
+
+  const checkAndTriggerRestockNotifications = useCallback((productId: string, restockedQty: number) => {
+    const targetProduct = products.find((p) => p.id === productId);
+    if (!targetProduct) return;
+
+    setBackInStockSubscriptions((prev) => {
+      const pendingForProduct = prev.filter((s) => s.productId === productId && s.status === 'pending');
+      if (pendingForProduct.length === 0) return prev;
+
+      const newLogs: StockNotificationLog[] = pendingForProduct.map((sub) => ({
+        id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        subscriptionId: sub.id,
+        customerEmail: sub.customerEmail,
+        productId: targetProduct.id,
+        productName: targetProduct.name,
+        productImage: targetProduct.images[0] || '',
+        restockedQuantity: restockedQty,
+        sentAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+        channel: 'Email',
+        status: 'Delivered',
+        subject: `Good news! ${targetProduct.name} is back in stock at AR VISION Eye Care!`,
+      }));
+
+      setStockNotificationLogs((logPrev) => [...newLogs, ...logPrev]);
+      logActivity(
+        'Back-in-Stock Notifications Sent',
+        'Inventory',
+        `Dispatched restock email alert to ${pendingForProduct.length} subscribed customer(s) for ${targetProduct.name}`,
+        'success'
+      );
+
+      return prev.map((s) => (s.productId === productId ? { ...s, status: 'notified', notifiedAt: new Date().toISOString() } : s));
+    });
+  }, [products]);
+
+  const adjustProductStock = useCallback((productId: string, variantId: string | undefined, delta: number, reason: string) => {
+    let wasZero = false;
+    let newQty = 0;
+    let targetName = '';
+    let targetSku = '';
+
+    setProducts((prev) =>
+      prev.map((prod) => {
+        if (prod.id !== productId) return prod;
+        targetName = prod.name;
+        targetSku = prod.sku;
+        const currentProdStock = prod.stock !== undefined ? prod.stock : prod.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+        wasZero = currentProdStock === 0;
+
+        let updatedVariants = prod.variants;
+        if (variantId) {
+          updatedVariants = prod.variants.map((v) => {
+            if (v.id === variantId) {
+              const updatedVStock = Math.max(0, v.stock + delta);
+              return { ...v, stock: updatedVStock };
+            }
+            return v;
+          });
+        }
+
+        const calculatedNewStock = prod.stock !== undefined ? Math.max(0, prod.stock + delta) : updatedVariants.reduce((s, v) => s + (v.stock || 0), 0);
+        newQty = calculatedNewStock;
+
+        return {
+          ...prod,
+          stock: calculatedNewStock,
+          variants: updatedVariants,
+        };
+      })
+    );
+
+    const newMovement: InventoryMovement = {
+      id: `mov-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      productId,
+      productName: targetName || 'Optical Product',
+      sku: targetSku || 'LK-OPT',
+      variantId,
+      type: delta > 0 ? 'restock' : 'adjustment',
+      quantityChange: delta,
+      remainingStock: newQty,
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      reason: reason || (delta > 0 ? `Stock replenishment (+${delta})` : `Manual inventory adjustment (${delta})`),
+      performedBy: currentAdminUser.name,
+    };
+    setInventoryMovements((prev) => [newMovement, ...prev]);
+
+    logActivity('Stock Adjusted', 'Inventory', `${targetName}: adjusted by ${delta > 0 ? '+' : ''}${delta}. New stock: ${newQty}`);
+
+    if (wasZero && newQty > 0) {
+      checkAndTriggerRestockNotifications(productId, newQty);
+    }
+  }, [currentAdminUser.name, checkAndTriggerRestockNotifications]);
+
+  // =========================================================================
+  // 5. Back-in-Stock Subscriptions
+  // =========================================================================
+  const subscribeBackInStock = useCallback((productId: string, customerEmail: string, variantId?: string) => {
+    const trimmedEmail = customerEmail.trim().toLowerCase();
+    if (!trimmedEmail || !trimmedEmail.includes('@') || !trimmedEmail.includes('.')) {
+      return { success: false, message: 'Please enter a valid email address.' };
+    }
+
+    const prod = products.find((p) => p.id === productId);
+    if (!prod) {
+      return { success: false, message: 'Product not found.' };
+    }
+
+    const existing = backInStockSubscriptions.find(
+      (s) => s.productId === productId && s.customerEmail.toLowerCase() === trimmedEmail && s.status === 'pending'
+    );
+    if (existing) {
+      return { success: true, message: 'You are already registered for restock updates for this frame.' };
+    }
+
+    const newSub: BackInStockSubscription = {
+      id: `sub-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      productId,
+      productName: prod.name,
+      productSku: prod.sku,
+      productImage: prod.images[0] || '',
+      variantId,
+      customerEmail: trimmedEmail,
+      subscribedAt: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      status: 'pending',
+    };
+
+    setBackInStockSubscriptions((prev) => [newSub, ...prev]);
+    logActivity('Restock Subscription', 'Customer Notifications', `Customer ${trimmedEmail} subscribed for restock alerts on ${prod.name}`);
+
+    return { success: true, message: `Success! We'll email ${trimmedEmail} as soon as this item is restocked.` };
+  }, [products, backInStockSubscriptions]);
+
   return (
     <StoreContext.Provider
       value={{
@@ -1863,6 +2401,35 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsAccountMenuOpen,
         activeAccountModal,
         setActiveAccountModal,
+
+        // 1. Dynamic Advertisement Poster Management & Scheduler
+        adPosters,
+        activeScheduledPoster,
+        addAdPoster,
+        updateAdPoster,
+        deleteAdPoster,
+
+        // 2. Dynamic Homepage Hero Video Management & Scheduler
+        homepageVideos,
+        activeScheduledVideo,
+        addHomepageVideo,
+        updateHomepageVideo,
+        deleteHomepageVideo,
+
+        // 3. Online Payments & Transactions
+        paymentTransactions,
+        recordPaymentTransaction,
+        processRefund,
+
+        // 4. Real-time Inventory Movements & Stock Controls
+        inventoryMovements,
+        adjustProductStock,
+        getProductStock,
+
+        // 5. Out-of-Stock Email Notifications & Restock Alerts
+        backInStockSubscriptions,
+        subscribeBackInStock,
+        stockNotificationLogs,
       }}
     >
       {children}

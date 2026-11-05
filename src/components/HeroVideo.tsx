@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 export const HeroVideo: React.FC = () => {
-  const { setActiveCategory, setIsBookAppointmentOpen } = useStore();
+  const { setActiveCategory, setIsBookAppointmentOpen, activeScheduledVideo } = useStore();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Video playback & audio states
@@ -23,6 +23,17 @@ export const HeroVideo: React.FC = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [centerFeedback, setCenterFeedback] = useState<'play' | 'pause' | 'sound' | 'mute' | null>(null);
   const feedbackTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // When active scheduled video rotates via server wall-clock, reload video smoothly
+  useEffect(() => {
+    if (videoRef.current && activeScheduledVideo?.videoUrl) {
+      videoRef.current.load();
+      videoRef.current.play().catch(() => {
+        // Autoplay policy fallback
+        setIsPlaying(false);
+      });
+    }
+  }, [activeScheduledVideo?.id, activeScheduledVideo?.videoUrl]);
 
   // Trigger brief visual feedback in center when toggled
   const showCenterFeedback = (type: 'play' | 'pause' | 'sound' | 'mute') => {
@@ -101,7 +112,7 @@ export const HeroVideo: React.FC = () => {
 
   return (
     <div className="relative w-full h-[88vh] min-h-[580px] max-h-[920px] bg-slate-950 overflow-hidden select-none group">
-      {/* 1. Cinematic Background Video */}
+      {/* 1. Cinematic Background Video with Dynamic Schedule Switching */}
       <video
         ref={videoRef}
         autoPlay
@@ -109,13 +120,16 @@ export const HeroVideo: React.FC = () => {
         muted={isMuted}
         playsInline
         preload="auto"
-        poster="/videos/hero-poster.jpg"
+        poster={activeScheduledVideo?.thumbnailUrl || "/videos/hero-poster.jpg"}
         onLoadedData={() => setVideoLoaded(true)}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onClick={handleVideoClick}
         className="w-full h-full object-cover object-center cursor-pointer transition-transform duration-1000 ease-out"
       >
+        {activeScheduledVideo?.videoUrl && (
+          <source src={activeScheduledVideo.videoUrl} type="video/mp4" />
+        )}
         <source src="/videos/hero-video.mp4" type="video/mp4" />
         <source src="/videos/hero.mp4" type="video/mp4" />
         <source src="https://streamable.com/igvxhz" type="video/mp4" />
@@ -150,14 +164,20 @@ export const HeroVideo: React.FC = () => {
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight font-heading text-white drop-shadow-md leading-tight">
-            Crafted for Clarity. <br className="hidden sm:inline" />
-            <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent">
-              Inspired by Acoustic Elegance.
-            </span>
+            {activeScheduledVideo?.title ? (
+              <span>{activeScheduledVideo.title}</span>
+            ) : (
+              <>
+                Crafted for Clarity. <br className="hidden sm:inline" />
+                <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent">
+                  Inspired by Acoustic Elegance.
+                </span>
+              </>
+            )}
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-300 font-light line-clamp-2 max-w-sm">
-            Experience our 2026 Titanium & Acoustic Art Series with precision zero-glare HD optics.
+            {activeScheduledVideo?.description || 'Experience our 2026 Titanium & Acoustic Art Series with precision zero-glare HD optics.'}
           </p>
 
           <div className="pt-1 flex items-center gap-3">

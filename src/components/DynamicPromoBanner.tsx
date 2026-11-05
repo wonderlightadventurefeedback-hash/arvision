@@ -20,11 +20,64 @@ interface DynamicPromoBannerProps {
 export const DynamicPromoBanner: React.FC<DynamicPromoBannerProps> = ({
   position = 'below_hero',
 }) => {
-  const { promoBanners, products, openPDP, setActiveCategory } = useStore();
+  const { promoBanners, products, openPDP, setActiveCategory, activeScheduledPoster } = useStore();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef<number | null>(null);
+
+  // If a scheduled poster is active for the current time slot, showcase it with responsive images
+  if (position === 'below_hero' && activeScheduledPoster) {
+    return (
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 my-6 sm:my-8 select-none">
+        <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl bg-slate-950 text-white border border-slate-800">
+          <picture className="w-full">
+            {activeScheduledPoster.mobileImage && (
+              <source media="(max-width: 640px)" srcSet={activeScheduledPoster.mobileImage} />
+            )}
+            {activeScheduledPoster.tabletImage && (
+              <source media="(max-width: 1024px)" srcSet={activeScheduledPoster.tabletImage} />
+            )}
+            <img
+              src={activeScheduledPoster.imageUrl}
+              alt={activeScheduledPoster.title}
+              className="w-full h-auto min-h-[200px] max-h-[380px] object-cover"
+            />
+          </picture>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/45 to-transparent flex items-center p-6 sm:p-12">
+            <div className="max-w-md space-y-2.5">
+              <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-slate-950 shadow-xs">
+                Scheduled Spotlight
+              </span>
+              <h3 className="text-xl sm:text-3xl font-black font-heading text-white tracking-tight">
+                {activeScheduledPoster.title}
+              </h3>
+              {activeScheduledPoster.description && (
+                <p className="text-xs sm:text-sm text-slate-300 line-clamp-2 leading-relaxed">
+                  {activeScheduledPoster.description}
+                </p>
+              )}
+              {activeScheduledPoster.ctaText && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => {
+                      if (activeScheduledPoster.ctaLink) {
+                        setActiveCategory(activeScheduledPoster.ctaLink);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white text-slate-950 text-xs font-bold hover:bg-amber-400 transition cursor-pointer shadow-lg"
+                  >
+                    <span>{activeScheduledPoster.ctaText}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Filter only published and non-expired banners for this position (or below_hero as default)
   const activeBanners = promoBanners.filter((banner) => {

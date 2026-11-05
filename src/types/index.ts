@@ -48,6 +48,8 @@ export interface Product {
   selectedVariantId?: string;
   frameColor: string;
   tags: string[];
+  stock?: number; // Total available product stock (e.g. 20 Units)
+  lowStockThreshold?: number; // Threshold for "Only X left" badge (default: 10)
 }
 
 export interface LensSelection {
@@ -530,4 +532,128 @@ export interface UserProfile {
     emailNewsletters: boolean;
   };
 }
+
+// ==========================================
+// Dynamic Advertisement Posters & Scheduling
+// ==========================================
+export interface AdPoster {
+  id: string;
+  title: string;
+  description: string;
+  desktopImage: string;
+  tabletImage?: string;
+  mobileImage: string;
+  ctaText: string;
+  ctaLink: string;
+  priority: number;
+  status: 'active' | 'draft' | 'paused';
+  startDate: string; // YYYY-MM-DD
+  startTime: string; // HH:mm
+  endDate: string; // YYYY-MM-DD
+  endTime: string; // HH:mm
+  displayDurationMinutes: number;
+  repeatSchedule: 'none' | 'daily' | 'weekly';
+  timeZone: string;
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ==========================================
+// Dynamic Homepage Hero Videos & Scheduling
+// ==========================================
+export interface HomepageVideo {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  posterUrl: string;
+  ctaText: string;
+  ctaLink: string;
+  durationMinutes: number; // e.g. 60 min for 1 hour or custom
+  priority: number;
+  status: 'active' | 'draft' | 'scheduled';
+  scheduledStartTime?: string; // e.g. "10:00"
+  scheduledEndTime?: string; // e.g. "11:00"
+  order: number;
+  createdAt: string;
+}
+
+// ==========================================
+// Payment Gateway & Transactions
+// ==========================================
+export interface PaymentTransaction {
+  id: string; // e.g. "TXN-2026-98124"
+  orderId: string; // e.g. "ord-1730829..."
+  orderNumber: string; // e.g. "WND-2026-4819"
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  paymentDate: string;
+  paymentMethod: 'UPI' | 'Debit Card' | 'Credit Card' | 'Net Banking' | 'Wallets' | 'Cash on Delivery';
+  amount: number;
+  currency: string;
+  status: 'Successful' | 'Pending' | 'Failed' | 'Refunded';
+  refundStatus: 'None' | 'Requested' | 'Refunded' | 'Partial';
+  providerReference: string; // e.g. "rzp_live_9a7d83hf2"
+  items: CartItem[];
+  deliveryAddress: {
+    addressLine: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  failureReason?: string;
+  createdAt: string;
+}
+
+// ==========================================
+// Inventory Movement & Stock History
+// ==========================================
+export interface InventoryMovement {
+  id: string;
+  productId: string;
+  productName: string;
+  variantId?: string;
+  variantName?: string;
+  sku: string;
+  type: 'sale' | 'restock' | 'adjustment' | 'cancellation_return';
+  quantityChange: number; // e.g. -1, -2, +20
+  remainingStock: number;
+  timestamp: string;
+  reason: string;
+  orderId?: string;
+  performedBy: string;
+}
+
+// ==========================================
+// Out-of-Stock Subscriptions & Restock Alerts
+// ==========================================
+export interface BackInStockSubscription {
+  id: string;
+  productId: string;
+  productName: string;
+  productSku: string;
+  productImage: string;
+  variantId?: string;
+  customerEmail: string;
+  subscribedAt: string;
+  status: 'pending' | 'notified';
+  notifiedAt?: string;
+}
+
+export interface StockNotificationLog {
+  id: string;
+  subscriptionId: string;
+  customerEmail: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  restockedQuantity: number;
+  sentAt: string;
+  channel: 'Email';
+  status: 'Delivered';
+  subject: string;
+}
+
 

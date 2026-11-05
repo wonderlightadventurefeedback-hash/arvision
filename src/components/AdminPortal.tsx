@@ -18,6 +18,11 @@ import { AdminCameraCapture } from './admin/AdminCameraCapture';
 import { WebsitePreviewModal } from './admin/WebsitePreviewModal';
 import { PromoBannerEditorModal } from './admin/PromoBannerEditorModal';
 import { AppointmentManagementDashboard } from './admin/AppointmentManagementDashboard';
+import { AdPosterManager } from './admin/AdPosterManager';
+import { HomepageVideoManager } from './admin/HomepageVideoManager';
+import { PaymentsManager } from './admin/PaymentsManager';
+import { InventoryDesk } from './admin/InventoryDesk';
+import { OrdersManager } from './admin/OrdersManager';
 import {
   LayoutDashboard,
   Package,
@@ -67,6 +72,8 @@ import {
   Monitor,
   Tablet,
   Smartphone,
+  Film,
+  CreditCard,
 } from 'lucide-react';
 
 export const AdminPortal: React.FC = () => {
@@ -138,6 +145,9 @@ export const AdminPortal: React.FC = () => {
     | 'categories'
     | 'inventory'
     | 'orders'
+    | 'payments'
+    | 'posters'
+    | 'videos'
     | 'appointments'
     | 'customers'
     | 'banners'
@@ -158,6 +168,9 @@ export const AdminPortal: React.FC = () => {
         'categories',
         'inventory',
         'orders',
+        'payments',
+        'posters',
+        'videos',
         'appointments',
         'customers',
         'banners',
@@ -717,15 +730,18 @@ export const AdminPortal: React.FC = () => {
     { id: 'categories', label: '3. Categories & Taxonomy', icon: <Layers className="w-4 h-4" /> },
     { id: 'inventory', label: '4. Stock & Inventory Desk', icon: <AlertTriangle className="w-4 h-4" /> },
     { id: 'orders', label: '5. Order Fulfillment Hub', icon: <ShoppingBag className="w-4 h-4" /> },
-    { id: 'appointments', label: '6. Home Try-On Appointments', icon: <Calendar className="w-4 h-4" />, badge: pendingAppointmentsCount },
-    { id: 'customers', label: '7. Customer Directory', icon: <Users className="w-4 h-4" /> },
-    { id: 'banners', label: '8. Homepage Advertisement Manager', icon: <ImageIcon className="w-4 h-4" /> },
-    { id: 'promotions', label: '9. Promotions & Coupons', icon: <Flame className="w-4 h-4" /> },
-    { id: 'content', label: '10. Website Content & Layout', icon: <SlidersHorizontal className="w-4 h-4" /> },
-    { id: 'media', label: '11. Media Library & Camera', icon: <FolderOpen className="w-4 h-4" /> },
-    { id: 'analytics', label: '12. Analytics & Reports', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'users', label: '13. Admin Users & Security', icon: <ShieldCheck className="w-4 h-4" /> },
-    { id: 'settings', label: '14. Store Settings', icon: <Settings className="w-4 h-4" /> },
+    { id: 'payments', label: '6. Payments & Transactions', icon: <CreditCard className="w-4 h-4" /> },
+    { id: 'posters', label: '7. Advertisement Poster Manager', icon: <ImageIcon className="w-4 h-4" /> },
+    { id: 'videos', label: '8. Homepage Video Manager', icon: <Film className="w-4 h-4" /> },
+    { id: 'appointments', label: '9. Home Try-On Appointments', icon: <Calendar className="w-4 h-4" />, badge: pendingAppointmentsCount },
+    { id: 'customers', label: '10. Customer Directory', icon: <Users className="w-4 h-4" /> },
+    { id: 'banners', label: '11. Homepage Hero Banner Customizer', icon: <ImageIcon className="w-4 h-4" /> },
+    { id: 'promotions', label: '12. Promotions & Coupons', icon: <Flame className="w-4 h-4" /> },
+    { id: 'content', label: '13. Website Content & Layout', icon: <SlidersHorizontal className="w-4 h-4" /> },
+    { id: 'media', label: '14. Media Library & Camera', icon: <FolderOpen className="w-4 h-4" /> },
+    { id: 'analytics', label: '15. Analytics & Reports', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'users', label: '16. Admin Users & Security', icon: <ShieldCheck className="w-4 h-4" /> },
+    { id: 'settings', label: '17. Store Settings', icon: <Settings className="w-4 h-4" /> },
   ];
 
   return (
@@ -1550,269 +1566,19 @@ export const AdminPortal: React.FC = () => {
           )}
 
           {/* TAB 4: INVENTORY & STOCK ALERTS */}
-          {activeTab === 'inventory' && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-[#0B0B18] border border-purple-500/20">
-                <div>
-                  <h3 className="text-lg font-bold text-white font-heading">
-                    Real-Time Inventory Desk & Stock Level Warnings
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Units sold are strictly calculated from completed customer orders. Low-stock threshold is currently set to {websiteSettings?.lowStockThreshold ?? 15} units.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-[#0D0D1F] border border-purple-500/20">
-                  <div className="text-xs text-slate-400">Total Catalog Stock</div>
-                  <div className="text-2xl font-bold text-white font-heading mt-1">
-                    {products.reduce((sum, p) => sum + p.variants.reduce((s, v) => s + v.stock, 0), 0)} units
-                  </div>
-                </div>
-                <div className="p-4 rounded-xl bg-[#0D0D1F] border border-purple-500/20">
-                  <div className="text-xs text-slate-400">Items Needing Restock (&lt;15)</div>
-                  <div className="text-2xl font-bold text-amber-400 font-heading mt-1">
-                    {lowStockCount} frames
-                  </div>
-                </div>
-                <div className="p-4 rounded-xl bg-[#0D0D1F] border border-purple-500/20">
-                  <div className="text-xs text-slate-400">Total Units Dispatched / Sold</div>
-                  <div className="text-2xl font-bold text-cyan-400 font-heading mt-1">
-                    {totalUnitsSold} units
-                  </div>
-                </div>
-              </div>
-
-              {/* Inventory Table */}
-              <div className="rounded-2xl border border-purple-500/20 overflow-hidden bg-[#0B0B18]">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#0E0E24] text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-purple-500/20">
-                    <tr>
-                      <th className="px-4 py-3">Product Name & Variant</th>
-                      <th className="px-4 py-3">SKU</th>
-                      <th className="px-4 py-3">Units Sold (From Orders)</th>
-                      <th className="px-4 py-3">Remaining Stock</th>
-                      <th className="px-4 py-3">Inventory Health</th>
-                      <th className="px-4 py-3 text-right">Quick Stock Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {products.map((p) => {
-                      const totalStock = p.variants.reduce((s, v) => s + v.stock, 0);
-                      const unitsSold = getUnitsSoldForProduct(p.id);
-                      const isLow = totalStock < (websiteSettings?.lowStockThreshold ?? 15);
-
-                      return (
-                        <tr key={p.id} className="hover:bg-white/[0.02]">
-                          <td className="px-4 py-3">
-                            <div className="font-bold text-white">{p.name}</div>
-                            <div className="text-[11px] text-slate-400">{p.category}</div>
-                          </td>
-                          <td className="px-4 py-3 font-mono text-cyan-300">{p.sku}</td>
-                          <td className="px-4 py-3">
-                            <span className="font-bold text-white">{unitsSold}</span> units
-                          </td>
-                          <td className="px-4 py-3">
-                            <span
-                              className={`font-bold text-sm ${
-                                totalStock === 0 ? 'text-red-400' : isLow ? 'text-amber-400' : 'text-emerald-400'
-                              }`}
-                            >
-                              {totalStock}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            {totalStock === 0 ? (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/30">
-                                OUT OF STOCK
-                              </span>
-                            ) : isLow ? (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                                LOW STOCK ALERT
-                              </span>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                OPTIMAL
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => adjustStock(p.id, p.variants[0]?.id, 25)}
-                                className="px-2 py-1 rounded bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 text-xs font-semibold border border-purple-500/30"
-                              >
-                                +25 Units
-                              </button>
-                              <button
-                                onClick={() => adjustStock(p.id, p.variants[0]?.id, -5)}
-                                className="px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold border border-white/10"
-                              >
-                                -5
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+          {activeTab === 'inventory' && <InventoryDesk />}
 
           {/* TAB 5: ORDER FULFILLMENT HUB */}
-          {activeTab === 'orders' && (
-            <div className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between gap-4 p-5 rounded-2xl bg-[#0B0B18] border border-purple-500/20">
-                <div>
-                  <h3 className="text-lg font-bold text-white font-heading">
-                    Customer Orders & Prescription State Machine
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Advance orders through Confirmation, Prescription Review, Processing, Lens Glazing, and Delivery.
-                  </p>
-                </div>
-              </div>
+          {activeTab === 'orders' && <OrdersManager />}
 
-              {/* Order Search & Filter */}
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0B0B18] p-3 rounded-xl border border-purple-500/20 text-xs">
-                <div className="relative flex-1 min-w-[240px]">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    placeholder="Search order number, customer name, email..."
-                    value={orderSearch}
-                    onChange={(e) => setOrderSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs outline-none focus:border-cyan-400"
-                  />
-                </div>
+          {/* TAB: PAYMENTS & TRANSACTIONS */}
+          {activeTab === 'payments' && <PaymentsManager onViewOrder={() => setActiveTab('orders')} />}
 
-                <div className="flex items-center gap-2">
-                  <span className="text-slate-400">Filter Status:</span>
-                  <select
-                    value={orderStatusFilter}
-                    onChange={(e) => setOrderStatusFilter(e.target.value)}
-                    className="bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-2 text-xs outline-none"
-                  >
-                    <option value="All">All Statuses</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="Prescription Review">Prescription Review</option>
-                    <option value="Processing">Processing</option>
-                    <option value="Lens Preparation">Lens Preparation</option>
-                    <option value="Dispatched">Dispatched</option>
-                    <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </div>
-              </div>
+          {/* TAB: ADVERTISEMENT POSTER MANAGER */}
+          {activeTab === 'posters' && <AdPosterManager />}
 
-              {/* Orders List */}
-              <div className="space-y-4">
-                {filteredOrders.map((order) => (
-                  <div
-                    key={order.id}
-                    className="p-5 rounded-2xl bg-[#0B0B18] border border-purple-500/20 space-y-4 shadow-xl"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/5">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm font-extrabold text-cyan-400">
-                          #{order.orderNumber}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          Placed on {new Date(order.createdAt).toLocaleDateString()}
-                        </span>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                          {order.orderStatus}
-                        </span>
-                      </div>
-
-                      {/* Advance Status Dropdown */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">Change Status:</span>
-                        <select
-                          value={order.orderStatus}
-                          onChange={(e) => updateOrderStatus(order.id, e.target.value as OrderStatus)}
-                          className="bg-slate-900 border border-cyan-500/30 text-cyan-300 rounded-lg px-3 py-1.5 text-xs font-bold outline-none cursor-pointer"
-                        >
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Prescription Review">Prescription Review</option>
-                          <option value="Processing">Processing</option>
-                          <option value="Lens Preparation">Lens Preparation</option>
-                          <option value="Dispatched">Dispatched</option>
-                          <option value="Delivered">Delivered</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Customer & Shipping Summary */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                      <div>
-                        <div className="text-slate-400 text-[10px] uppercase font-bold">Customer</div>
-                        <div className="font-bold text-white mt-0.5">{order.customerName}</div>
-                        <div className="text-slate-400">{order.customerEmail}</div>
-                        <div className="text-slate-400">{order.customerPhone}</div>
-                      </div>
-
-                      <div>
-                        <div className="text-slate-400 text-[10px] uppercase font-bold">Shipping Address</div>
-                        <div className="text-slate-300 mt-0.5">
-                          {order.shippingAddress.addressLine}, {order.shippingAddress.city},{' '}
-                          {order.shippingAddress.state} - {order.shippingAddress.pincode}
-                        </div>
-                        {order.trackingNumber && (
-                          <div className="text-[11px] text-cyan-400 font-mono mt-1">
-                            Tracking: {order.trackingNumber}
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <div className="text-slate-400 text-[10px] uppercase font-bold">Payment & Total</div>
-                        <div className="text-base font-extrabold text-white mt-0.5">
-                          ₹{order.totalAmount.toLocaleString()}
-                        </div>
-                        <div className="text-emerald-400 font-medium">
-                          {order.paymentMethod} • {order.paymentStatus}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Ordered Items List */}
-                    <div className="pt-2 border-t border-white/5 space-y-2">
-                      <div className="text-[10px] uppercase font-bold text-slate-400">Items Ordered</div>
-                      {order.items.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center justify-between p-2 rounded-xl bg-white/[0.02] border border-white/5 text-xs"
-                        >
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={item.product.images[0]}
-                              alt={item.product.name}
-                              className="w-10 h-10 rounded-lg object-cover border border-white/10"
-                            />
-                            <div>
-                              <div className="font-bold text-white">{item.product.name}</div>
-                              <div className="text-[11px] text-slate-400">
-                                Color: {item.selectedVariant.colorName} • Qty: {item.quantity}
-                                {item.lensSelection && ` • Lens: ${item.lensSelection.lensTypeName}`}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="font-extrabold text-white">
-                            ₹{item.totalPrice.toLocaleString()}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* TAB: HOMEPAGE VIDEO MANAGER */}
+          {activeTab === 'videos' && <HomepageVideoManager />}
 
           {/* TAB 6: HOME TRY-ON & EYE TEST APPOINTMENTS HUB */}
           {activeTab === 'appointments' && (

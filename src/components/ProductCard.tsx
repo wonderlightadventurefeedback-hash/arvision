@@ -23,6 +23,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     toggleWishlist,
     comparisonList,
     toggleCompare,
+    getProductStock,
   } = useStore();
 
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -30,6 +31,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const isWishlisted = wishlist.includes(product.id);
   const isCompared = comparisonList.includes(product.id);
+
+  const availableStock = getProductStock(product);
+  const isOutOfStock = availableStock === 0;
+  const isLowStock = availableStock > 0 && availableStock <= (product.lowStockThreshold || 5);
 
   return (
     <div className="group relative bg-white rounded-2xl border border-slate-200 hover:border-indigo-400 hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
@@ -45,6 +50,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.isBestSeller && (
             <span className="pointer-events-auto bg-slate-900 text-white font-semibold text-[10px] px-2 py-0.5 rounded-md">
               BESTSELLER
+            </span>
+          )}
+          {isOutOfStock ? (
+            <span className="pointer-events-auto bg-rose-600 text-white font-bold text-[9px] px-2 py-0.5 rounded-md shadow-xs uppercase tracking-wider">
+              OUT OF STOCK
+            </span>
+          ) : isLowStock ? (
+            <span className="pointer-events-auto bg-amber-500 text-slate-950 font-bold text-[9px] px-2 py-0.5 rounded-md shadow-xs">
+              Only {availableStock} Left!
+            </span>
+          ) : (
+            <span className="pointer-events-auto bg-emerald-600 text-white font-medium text-[9px] px-1.5 py-0.5 rounded-md">
+              {availableStock} in Stock
             </span>
           )}
         </div>
@@ -181,15 +199,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
         </div>
 
-        {/* Action Button: Custom Lens & Buy */}
+        {/* Action Button: Custom Lens & Buy or Out of Stock Notification */}
         <div className="pt-1">
-          <button
-            onClick={() => openLensCustomizer(product)}
-            className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-          >
-            <span>Select Lens & Buy</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          {isOutOfStock ? (
+            <button
+              onClick={() => openPDP(product)}
+              className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-rose-600 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer border border-rose-200"
+            >
+              <span>Out of Stock • Notify Me</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => openLensCustomizer(product)}
+              className="w-full py-2 px-3 rounded-xl bg-slate-900 hover:bg-indigo-600 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <span>Select Lens & Buy</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </div>
