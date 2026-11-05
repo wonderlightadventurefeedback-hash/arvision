@@ -69,11 +69,11 @@ const MainAppContent: React.FC = () => {
       {/* 1. Header with announcement bar & search */}
       <Header />
 
-      {/* Main page content with background blur when navbar mega menu is open */}
+      {/* Main page content with deep background blur & dark tint when navbar mega menu is open */}
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ease-out ${
           isAnyMegaMenuOpen
-            ? 'filter blur-[6px] brightness-90 contrast-95 pointer-events-none select-none'
+            ? 'filter blur-[8px] brightness-75 contrast-95 pointer-events-none select-none'
             : 'filter blur-0 brightness-100 contrast-100'
         }`}
       >

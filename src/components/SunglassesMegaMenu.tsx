@@ -129,7 +129,7 @@ export const SunglassesMegaMenu: React.FC<SunglassesMegaMenuProps> = ({
   return (
     <div
       className={`fixed inset-0 top-[60px] sm:top-[70px] z-50 transition-all duration-300 ease-out flex justify-center ${
-        isVisible ? 'opacity-100 backdrop-blur-md bg-black/60' : 'opacity-0 pointer-events-none'
+        isVisible ? 'opacity-100 backdrop-blur-xl bg-black/80' : 'opacity-0 pointer-events-none'
       }`}
       onClick={(e) => {
         if (e.target === e.currentTarget) {

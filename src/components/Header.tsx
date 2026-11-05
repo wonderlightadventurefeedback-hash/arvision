@@ -91,10 +91,10 @@ export const Header: React.FC = () => {
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Detect window scroll to transition navbar styling
+  // Detect window scroll to transition navbar styling (instant black background when scrolled)
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 30);
+      setIsScrolled(window.scrollY > 10);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -191,8 +191,8 @@ export const Header: React.FC = () => {
         isEyeglassesPage
           ? 'bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-200 py-2.5 sm:py-3 text-slate-900'
           : isTransparentHeroHeader
-          ? 'bg-gradient-to-b from-black/85 via-black/40 to-transparent py-4 sm:py-5'
-          : 'bg-slate-950/95 backdrop-blur-md shadow-xl border-b border-white/10 py-3 sm:py-3.5'
+          ? 'bg-gradient-to-b from-black/85 via-black/40 to-transparent py-4 sm:py-5 text-white'
+          : 'bg-black/95 backdrop-blur-xl shadow-2xl border-b border-white/10 py-3 sm:py-3.5 text-white'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
