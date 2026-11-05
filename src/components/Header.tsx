@@ -144,12 +144,50 @@ export const Header: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const isAnyMegaMenuOpen =
+    isEyeglassesMenuOpen || isSunglassesMenuOpen || isContactLensMenuOpen || isTryAtHomeMenuOpen;
   const isEyeglassesPage = activeCategory === 'Eyeglasses';
-  const isTransparentHeroHeader = !isScrolled && activeCategory === 'All';
+  const isTransparentHeroHeader = !isScrolled && activeCategory === 'All' && !isAnyMegaMenuOpen;
+
+  // Hover Debounce Timer for Mega Menu Opening & Closing
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const cancelCloseTimeout = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const handleMenuHover = (menu: 'eyeglasses' | 'sunglasses' | 'contact' | 'tryathome') => {
+    cancelCloseTimeout();
+    setIsEyeglassesMenuOpen(menu === 'eyeglasses');
+    setIsSunglassesMenuOpen(menu === 'sunglasses');
+    setIsContactLensMenuOpen(menu === 'contact');
+    setIsTryAtHomeMenuOpen(menu === 'tryathome');
+  };
+
+  const handleMouseLeaveNav = () => {
+    cancelCloseTimeout();
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsEyeglassesMenuOpen(false);
+      setIsSunglassesMenuOpen(false);
+      setIsContactLensMenuOpen(false);
+      setIsTryAtHomeMenuOpen(false);
+    }, 220);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         isEyeglassesPage
           ? 'bg-white/95 backdrop-blur-md shadow-xs border-b border-slate-200 py-2.5 sm:py-3 text-slate-900'
           : isTransparentHeroHeader
@@ -187,15 +225,14 @@ export const Header: React.FC = () => {
               </button>
             ) : (
               /* Desktop Navigation Links (Layout matching the screenshot) */
-              <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+              <nav
+                className="hidden md:flex items-center gap-6 lg:gap-8"
+                onMouseLeave={handleMouseLeaveNav}
+              >
                 <button
-                  onMouseEnter={() => {
-                    setIsEyeglassesMenuOpen(true);
-                    setIsSunglassesMenuOpen(false);
-                    setIsContactLensMenuOpen(false);
-                    setIsTryAtHomeMenuOpen(false);
-                  }}
+                  onMouseEnter={() => handleMenuHover('eyeglasses')}
                   onClick={() => {
+                    cancelCloseTimeout();
                     setIsEyeglassesMenuOpen(false);
                     setIsSunglassesMenuOpen(false);
                     setIsContactLensMenuOpen(false);
@@ -218,13 +255,9 @@ export const Header: React.FC = () => {
                 </button>
 
                 <button
-                  onMouseEnter={() => {
-                    setIsSunglassesMenuOpen(true);
-                    setIsEyeglassesMenuOpen(false);
-                    setIsContactLensMenuOpen(false);
-                    setIsTryAtHomeMenuOpen(false);
-                  }}
+                  onMouseEnter={() => handleMenuHover('sunglasses')}
                   onClick={() => {
+                    cancelCloseTimeout();
                     setIsSunglassesMenuOpen(!isSunglassesMenuOpen);
                     setIsEyeglassesMenuOpen(false);
                     setIsContactLensMenuOpen(false);
@@ -245,13 +278,9 @@ export const Header: React.FC = () => {
                 </button>
 
                 <button
-                  onMouseEnter={() => {
-                    setIsContactLensMenuOpen(true);
-                    setIsEyeglassesMenuOpen(false);
-                    setIsSunglassesMenuOpen(false);
-                    setIsTryAtHomeMenuOpen(false);
-                  }}
+                  onMouseEnter={() => handleMenuHover('contact')}
                   onClick={() => {
+                    cancelCloseTimeout();
                     setIsContactLensMenuOpen(!isContactLensMenuOpen);
                     setIsEyeglassesMenuOpen(false);
                     setIsSunglassesMenuOpen(false);
@@ -273,6 +302,7 @@ export const Header: React.FC = () => {
 
                 <button
                   onMouseEnter={() => {
+                    cancelCloseTimeout();
                     setIsEyeglassesMenuOpen(false);
                     setIsSunglassesMenuOpen(false);
                     setIsContactLensMenuOpen(false);
@@ -285,13 +315,9 @@ export const Header: React.FC = () => {
                 </button>
 
                 <button
-                  onMouseEnter={() => {
-                    setIsTryAtHomeMenuOpen(true);
-                    setIsEyeglassesMenuOpen(false);
-                    setIsSunglassesMenuOpen(false);
-                    setIsContactLensMenuOpen(false);
-                  }}
+                  onMouseEnter={() => handleMenuHover('tryathome')}
                   onClick={() => {
+                    cancelCloseTimeout();
                     setIsTryAtHomeMenuOpen(!isTryAtHomeMenuOpen);
                     setIsEyeglassesMenuOpen(false);
                     setIsSunglassesMenuOpen(false);
@@ -624,18 +650,26 @@ export const Header: React.FC = () => {
           <ContactLensMegaMenu
             isOpen={isContactLensMenuOpen}
             onClose={() => setIsContactLensMenuOpen(false)}
+            onMouseEnter={cancelCloseTimeout}
+            onMouseLeave={handleMouseLeaveNav}
           />
           <SunglassesMegaMenu
             isOpen={isSunglassesMenuOpen}
             onClose={() => setIsSunglassesMenuOpen(false)}
+            onMouseEnter={cancelCloseTimeout}
+            onMouseLeave={handleMouseLeaveNav}
           />
           <EyeglassesMegaMenu
             isOpen={isEyeglassesMenuOpen}
             onClose={() => setIsEyeglassesMenuOpen(false)}
+            onMouseEnter={cancelCloseTimeout}
+            onMouseLeave={handleMouseLeaveNav}
           />
           <TryAtHomeMegaMenu
             isOpen={isTryAtHomeMenuOpen}
             onClose={() => setIsTryAtHomeMenuOpen(false)}
+            onMouseEnter={cancelCloseTimeout}
+            onMouseLeave={handleMouseLeaveNav}
           />
         </>
       )}

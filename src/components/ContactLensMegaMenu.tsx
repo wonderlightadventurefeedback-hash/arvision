@@ -5,11 +5,15 @@ import { X, Sparkles, ArrowRight } from 'lucide-react';
 interface ContactLensMegaMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export const ContactLensMegaMenu: React.FC<ContactLensMegaMenuProps> = ({
   isOpen,
   onClose,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const { setActiveCategory } = useStore();
   const [activeTab, setActiveTab] = useState<'lenses' | 'solutions'>('lenses');
@@ -131,12 +135,20 @@ export const ContactLensMegaMenu: React.FC<ContactLensMegaMenuProps> = ({
   return (
     <div
       className={`fixed inset-0 top-[60px] sm:top-[70px] z-50 transition-all duration-300 ease-out flex justify-center ${
-        isVisible ? 'opacity-100 backdrop-blur-2xl bg-black/85' : 'opacity-0 pointer-events-none'
+        isVisible ? 'opacity-100 backdrop-blur-md bg-black/60' : 'opacity-0 pointer-events-none'
       }`}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {/* Mega Menu Inner Card */}
       <div
         ref={menuRef}
+        onMouseEnter={onMouseEnter}
         className={`w-full max-w-7xl mx-auto px-6 sm:px-12 py-8 sm:py-12 transform transition-all duration-300 ease-out select-none ${
           isVisible ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-6 opacity-0 scale-[0.98]'
         }`}

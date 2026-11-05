@@ -35,7 +35,21 @@ import { ManageNotificationsModal } from './components/account/ManageNotificatio
 import { MyOrdersModal } from './components/account/MyOrdersModal';
 
 const MainAppContent: React.FC = () => {
-  const { activeView, activeCategory, homepageSections } = useStore();
+  const {
+    activeView,
+    activeCategory,
+    homepageSections,
+    isContactLensMenuOpen,
+    isSunglassesMenuOpen,
+    isEyeglassesMenuOpen,
+    isTryAtHomeMenuOpen,
+  } = useStore();
+
+  const isAnyMegaMenuOpen =
+    isContactLensMenuOpen ||
+    isSunglassesMenuOpen ||
+    isEyeglassesMenuOpen ||
+    isTryAtHomeMenuOpen;
 
   if (activeView === 'design-board') {
     return <DesignBoardModal />;
@@ -55,30 +69,39 @@ const MainAppContent: React.FC = () => {
       {/* 1. Header with announcement bar & search */}
       <Header />
 
-      {isEyeglassesCategoryPage ? (
-        /* Eyeglasses Dedicated Product Listing Page matching user image */
-        <EyeglassesPLP />
-      ) : (
-        <>
-          {/* 2. Hero Video Showcase (if enabled) */}
-          {isHeroEnabled && <HeroVideo />}
+      {/* Main page content with background blur when navbar mega menu is open */}
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ease-out ${
+          isAnyMegaMenuOpen
+            ? 'filter blur-[6px] brightness-90 contrast-95 pointer-events-none select-none'
+            : 'filter blur-0 brightness-100 contrast-100'
+        }`}
+      >
+        {isEyeglassesCategoryPage ? (
+          /* Eyeglasses Dedicated Product Listing Page matching user image */
+          <EyeglassesPLP />
+        ) : (
+          <>
+            {/* 2. Hero Video Showcase (if enabled) */}
+            {isHeroEnabled && <HeroVideo />}
 
-          {/* 2b. Dynamic Customizable Promotional Advertisement Banner */}
-          <DynamicPromoBanner position="below_hero" />
+            {/* 2b. Dynamic Customizable Promotional Advertisement Banner */}
+            <DynamicPromoBanner position="below_hero" />
 
-          {/* 3. Festival Campaign Banner (if enabled) */}
-          {isFestivalEnabled && <FestivalBanner />}
+            {/* 3. Festival Campaign Banner (if enabled) */}
+            {isFestivalEnabled && <FestivalBanner />}
 
-          {/* 4. Category Grid, BOGO Spotlight, 3D AR Banner & Reviews */}
-          <HomepagePromotions />
+            {/* 4. Category Grid, BOGO Spotlight, 3D AR Banner & Reviews */}
+            <HomepagePromotions />
 
-          {/* 5. Complete Product Catalog & Advanced Faceted Discovery */}
-          <ProductCatalog />
-        </>
-      )}
+            {/* 5. Complete Product Catalog & Advanced Faceted Discovery */}
+            <ProductCatalog />
+          </>
+        )}
 
-      {/* 6. Footer & Trust Guarantees */}
-      <Footer />
+        {/* 6. Footer & Trust Guarantees */}
+        <Footer />
+      </div>
 
       {/* Interactive Optical Modals */}
       <VirtualTryOnModal />
