@@ -53,6 +53,7 @@ export interface Product {
 }
 
 export interface LensSelection {
+  name?: string;
   visionType: 'single_vision' | 'bifocal' | 'progressive' | 'zero_power';
   visionTypeName: string;
   lensType: 'blue_shield' | 'anti_reflective' | 'photochromic' | 'polarized';
@@ -88,13 +89,20 @@ export interface CartItem {
 
 export type OrderStatus =
   | 'Pending Payment'
+  | 'Payment Confirmed'
+  | 'Order Placed'
   | 'Confirmed'
   | 'Prescription Review'
   | 'Processing'
   | 'Lens Preparation'
+  | 'Quality Check'
+  | 'Quality Check Passed'
   | 'Dispatched'
+  | 'Dispatched / Shipped'
+  | 'Out for Delivery'
   | 'Delivered'
   | 'Cancelled'
+  | 'Cancelled / Refunded'
   | 'Refunded';
 
 export interface Order {
@@ -116,8 +124,8 @@ export interface Order {
   tax: number;
   shipping: number;
   totalAmount: number;
-  paymentMethod: 'UPI' | 'Card' | 'NetBanking' | 'Cash on Delivery';
-  paymentStatus: 'Paid' | 'Pending' | 'Refunded';
+  paymentMethod: 'UPI' | 'Card' | 'Debit Card' | 'Credit Card' | 'NetBanking' | 'Net Banking' | 'Wallets' | 'Cash on Delivery' | string;
+  paymentStatus: 'Paid' | 'Pending' | 'Refunded' | 'Failed' | 'Successful' | string;
   orderStatus: OrderStatus;
   statusHistory: {
     status: OrderStatus;
@@ -125,7 +133,7 @@ export interface Order {
     note: string;
   }[];
   trackingNumber?: string;
-  prescriptionStatus: 'Not Required' | 'Uploaded - Pending Review' | 'Verified' | 'Clarification Needed';
+  prescriptionStatus?: 'Not Required' | 'Uploaded - Pending Review' | 'Verified' | 'Clarification Needed' | string;
 }
 
 export interface FestivalCampaign {
@@ -540,18 +548,20 @@ export interface AdPoster {
   id: string;
   title: string;
   description: string;
+  imageUrl?: string;
   desktopImage: string;
   tabletImage?: string;
   mobileImage: string;
   ctaText: string;
   ctaLink: string;
   priority: number;
-  status: 'active' | 'draft' | 'paused';
+  status: 'active' | 'draft' | 'paused' | 'inactive';
   startDate: string; // YYYY-MM-DD
   startTime: string; // HH:mm
   endDate: string; // YYYY-MM-DD
   endTime: string; // HH:mm
-  displayDurationMinutes: number;
+  displayDurationMinutes?: number;
+  durationMinutes?: number;
   repeatSchedule: 'none' | 'daily' | 'weekly';
   timeZone: string;
   tags?: string[];
@@ -567,12 +577,13 @@ export interface HomepageVideo {
   title: string;
   description: string;
   videoUrl: string;
-  posterUrl: string;
+  posterUrl?: string;
+  thumbnailUrl?: string;
   ctaText: string;
   ctaLink: string;
   durationMinutes: number; // e.g. 60 min for 1 hour or custom
   priority: number;
-  status: 'active' | 'draft' | 'scheduled';
+  status: 'active' | 'draft' | 'scheduled' | 'inactive';
   scheduledStartTime?: string; // e.g. "10:00"
   scheduledEndTime?: string; // e.g. "11:00"
   order: number;
@@ -584,20 +595,24 @@ export interface HomepageVideo {
 // ==========================================
 export interface PaymentTransaction {
   id: string; // e.g. "TXN-2026-98124"
-  orderId: string; // e.g. "ord-1730829..."
-  orderNumber: string; // e.g. "WND-2026-4819"
+  orderId?: string; // e.g. "ord-1730829..."
+  orderNumber?: string; // e.g. "WND-2026-4819"
   customerName: string;
   customerEmail: string;
-  customerPhone: string;
-  paymentDate: string;
-  paymentMethod: 'UPI' | 'Debit Card' | 'Credit Card' | 'Net Banking' | 'Wallets' | 'Cash on Delivery';
+  customerPhone?: string;
+  paymentDate?: string;
+  paymentMethod: 'UPI' | 'Debit Card' | 'Credit Card' | 'Net Banking' | 'Wallets' | 'Cash on Delivery' | string;
   amount: number;
-  currency: string;
-  status: 'Successful' | 'Pending' | 'Failed' | 'Refunded';
-  refundStatus: 'None' | 'Requested' | 'Refunded' | 'Partial';
-  providerReference: string; // e.g. "rzp_live_9a7d83hf2"
-  items: CartItem[];
-  deliveryAddress: {
+  currency?: string;
+  status: 'Successful' | 'Success' | 'Pending' | 'Failed' | 'Refunded';
+  refundStatus?: 'None' | 'Requested' | 'Refunded' | 'Partial' | string;
+  providerReference?: string; // e.g. "rzp_live_9a7d83hf2"
+  gatewayPaymentId?: string;
+  gateway?: string;
+  receiptNumber?: string;
+  productSummary?: string;
+  items?: CartItem[];
+  deliveryAddress?: {
     addressLine: string;
     city: string;
     state: string;

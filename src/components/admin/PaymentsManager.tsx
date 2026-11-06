@@ -39,20 +39,26 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
 
   // Filtered transactions
   const filteredTransactions = useMemo(() => {
-    return paymentTransactions.filter((tx) => {
+    return (paymentTransactions || []).filter((tx) => {
+      if (!tx) return false;
+      const txStatus = tx.status || 'Successful';
+      const isTxRefunded = tx.refundStatus === 'Refunded' || txStatus === 'Refunded';
+
       if (statusFilter !== 'All') {
-        if (statusFilter === 'Refunded' && tx.refundStatus !== 'Refunded') return false;
-        if (statusFilter !== 'Refunded' && tx.status !== statusFilter) return false;
+        if (statusFilter === 'Refunded' && !isTxRefunded) return false;
+        if (statusFilter === 'Success' && txStatus !== 'Success' && txStatus !== 'Successful') return false;
+        if (statusFilter === 'Pending' && txStatus !== 'Pending') return false;
+        if (statusFilter === 'Failed' && txStatus !== 'Failed') return false;
       }
-      if (methodFilter !== 'All' && !tx.paymentMethod.toLowerCase().includes(methodFilter.toLowerCase())) {
+      if (methodFilter !== 'All' && !(tx.paymentMethod || '').toLowerCase().includes(methodFilter.toLowerCase())) {
         return false;
       }
       if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchId = tx.id.toLowerCase().includes(q) || tx.gatewayPaymentId.toLowerCase().includes(q);
-        const matchOrder = tx.orderNumber?.toLowerCase().includes(q) || tx.orderId?.toLowerCase().includes(q);
-        const matchCust = tx.customerName.toLowerCase().includes(q) || tx.customerEmail.toLowerCase().includes(q);
-        const matchProd = tx.productSummary?.toLowerCase().includes(q);
+        const q = searchQuery.toLowerCase().trim();
+        const matchId = (tx.id || '').toLowerCase().includes(q) || (tx.gatewayPaymentId || tx.providerReference || '').toLowerCase().includes(q);
+        const matchOrder = (tx.orderNumber || tx.orderId || '').toLowerCase().includes(q);
+        const matchCust = (tx.customerName || '').toLowerCase().includes(q) || (tx.customerEmail || '').toLowerCase().includes(q);
+        const matchProd = (tx.productSummary || '').toLowerCase().includes(q);
         if (!matchId && !matchOrder && !matchCust && !matchProd) return false;
       }
       return true;
@@ -60,13 +66,13 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
   }, [paymentTransactions, statusFilter, methodFilter, searchQuery]);
 
   // Aggregate Metrics
-  const totalVolume = paymentTransactions
-    .filter((t) => t.status === 'Success')
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totalVolume = (paymentTransactions || [])
+    .filter((t) => t && (t.status === 'Success' || t.status === 'Successful'))
+    .reduce((sum, t) => sum + (t.amount || 0), 0);
 
-  const successfulCount = paymentTransactions.filter((t) => t.status === 'Success').length;
-  const pendingCount = paymentTransactions.filter((t) => t.status === 'Pending').length;
-  const refundedCount = paymentTransactions.filter((t) => t.refundStatus === 'Refunded').length;
+  const successfulCount = (paymentTransactions || []).filter((t) => t && (t.status === 'Success' || t.status === 'Successful')).length;
+  const pendingCount = (paymentTransactions || []).filter((t) => t && t.status === 'Pending').length;
+  const refundedCount = (paymentTransactions || []).filter((t) => t && (t.refundStatus === 'Refunded' || t.status === 'Refunded')).length;
 
   // Export to CSV
   const handleExportCSV = () => {
@@ -205,7 +211,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Tx ID, Order #, Customer, or Product..."
-            className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl outline-none focus:border-indigo-500 font-sans"
+            className="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl outline-none focus:border-indigo-500 font-sans bg-white text-slate-900 placeholder:text-slate-400 font-medium"
           />
         </div>
 
@@ -219,7 +225,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                 className={`px-3 py-1 rounded-lg transition ${
                   statusFilter === st
                     ? 'bg-white text-slate-900 shadow-xs font-bold'
-                    : 'text-slate-500 hover:text-slate-800'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {st}
@@ -231,7 +237,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 bg-white"
+            className="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 bg-white"
           >
             <option value="All">All Methods</option>
             <option value="UPI">UPI</option>
@@ -276,7 +282,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                       <td className="py-3 px-3">
                         <div className="font-mono font-bold text-slate-900">{tx.id}</div>
                         <div className="font-mono text-[10px] text-slate-400 truncate max-w-[130px]">
-                          {tx.gatewayPaymentId}
+                          {tx.gatewayPaymentId || tx.providerReference || 'Verified Gateway'}
                         </div>
                       </td>
                       <td className="py-3 px-2 font-mono font-semibold text-indigo-700">
@@ -289,12 +295,12 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                         </div>
                       </td>
                       <td className="py-3 px-2 text-[11px] text-slate-500 whitespace-nowrap">
-                        {new Date(tx.createdAt).toLocaleDateString('en-IN', {
+                        {tx.createdAt ? new Date(tx.createdAt).toLocaleDateString('en-IN', {
                           day: '2-digit',
                           month: 'short',
                           hour: '2-digit',
                           minute: '2-digit',
-                        })}
+                        }) : tx.paymentDate || 'Recent'}
                       </td>
                       <td className="py-3 px-2">
                         <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 font-semibold text-slate-800 text-[11px]">
@@ -302,7 +308,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                         </span>
                       </td>
                       <td className="py-3 px-3 text-[11px] text-slate-600 max-w-[180px] truncate" title={tx.productSummary}>
-                        {tx.productSummary || 'Eyewear Frame'}
+                        {tx.productSummary || (tx.items && tx.items.length > 0 ? tx.items.map((i) => i.product.name).join(', ') : 'Eyewear Frame')}
                       </td>
                       <td className="py-3 px-2 text-right font-mono font-black text-slate-900">
                         ₹{tx.amount.toLocaleString('en-IN')}
@@ -310,7 +316,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                       <td className="py-3 px-2 text-center">
                         <span
                           className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            tx.status === 'Success'
+                            tx.status === 'Success' || tx.status === 'Successful'
                               ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                               : tx.status === 'Pending'
                               ? 'bg-amber-100 text-amber-800 border border-amber-300'
@@ -347,7 +353,7 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                           >
                             <Receipt className="w-3.5 h-3.5" />
                           </button>
-                          {tx.status === 'Success' && !isRefunded && (
+                          {(tx.status === 'Success' || tx.status === 'Successful') && !isRefunded && (
                             <button
                               onClick={() => {
                                 setRefundModalTx(tx);
@@ -390,11 +396,11 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Gateway Ref:</span>
-                  <span className="font-mono text-indigo-700">{selectedTx.gatewayPaymentId}</span>
+                  <span className="font-mono text-indigo-700">{selectedTx.gatewayPaymentId || selectedTx.providerReference || 'Verified Gateway Reference'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Order ID:</span>
-                  <span className="font-mono font-bold text-slate-900">{selectedTx.orderNumber || selectedTx.orderId}</span>
+                  <span className="font-mono font-bold text-slate-900">{selectedTx.orderNumber || selectedTx.orderId || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Total Settled:</span>
@@ -402,11 +408,11 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Payment Gateway:</span>
-                  <span className="font-semibold text-slate-800">{selectedTx.gateway}</span>
+                  <span className="font-semibold text-slate-800">{selectedTx.gateway || 'Razorpay Gateway'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Receipt Number:</span>
-                  <span className="font-mono text-slate-700">{selectedTx.receiptNumber || 'REC-GEN'}</span>
+                  <span className="font-mono text-slate-700">{selectedTx.receiptNumber || `REC-${selectedTx.id.slice(-6)}`}</span>
                 </div>
               </div>
 
@@ -524,17 +530,17 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
             getLinkedOrder(receiptTx) || {
               id: receiptTx.orderId || 'ord-rec',
               orderNumber: receiptTx.orderNumber || 'ARV-2026-REC',
-              createdAt: receiptTx.createdAt,
+              createdAt: receiptTx.createdAt || new Date().toISOString(),
               customerName: receiptTx.customerName,
               customerEmail: receiptTx.customerEmail,
-              customerPhone: '+91 98200 12345',
-              shippingAddress: {
+              customerPhone: receiptTx.customerPhone || '+91 98200 12345',
+              shippingAddress: receiptTx.deliveryAddress || {
                 addressLine: 'Registered Shipping Address',
                 city: 'Mumbai',
                 state: 'Maharashtra',
                 pincode: '400050',
               },
-              items: [
+              items: receiptTx.items && receiptTx.items.length > 0 ? receiptTx.items : [
                 {
                   id: 'item-receipt',
                   product: {
@@ -556,9 +562,15 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
                     size: 'Medium',
                     isBogoEligible: false,
                     isBestSeller: true,
+                    isPublished: true,
                     sku: 'ARV-OPT-902',
                     description: 'Optical eyewear',
+                    features: ['Titanium Frame', 'High Index Lens'],
+                    weight: 16,
+                    frameColor: 'Classic Black',
+                    tags: ['Eyeglasses'],
                   },
+                  selectedVariant: { id: 'var-rec', colorName: 'Classic Black', colorHex: '#000000', stock: 10, image: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371' },
                   quantity: 1,
                   unitPrice: receiptTx.amount,
                   totalPrice: receiptTx.amount,
@@ -569,10 +581,11 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
               tax: Math.round(receiptTx.amount * 0.18),
               shipping: 0,
               totalAmount: receiptTx.amount,
-              paymentMethod: receiptTx.paymentMethod,
-              paymentStatus: receiptTx.status === 'Success' ? 'Paid' : (receiptTx.status as any),
+              paymentMethod: receiptTx.paymentMethod as any,
+              paymentStatus: (receiptTx.status === 'Success' || receiptTx.status === 'Successful' ? 'Paid' : receiptTx.status) as any,
               orderStatus: 'Confirmed',
               statusHistory: [],
+              prescriptionStatus: 'Not Required',
             }
           }
           transaction={receiptTx}
@@ -582,3 +595,4 @@ export const PaymentsManager: React.FC<PaymentsManagerProps> = ({ onViewOrder })
     </div>
   );
 };
+

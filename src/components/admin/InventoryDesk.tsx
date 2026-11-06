@@ -628,3 +628,4 @@ export const InventoryDesk: React.FC = () => {
     </div>
   );
 };
+

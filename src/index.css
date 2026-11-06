@@ -16,6 +16,30 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
   }
+
+  /* Universal high-contrast input readability */
+  input, textarea, select {
+    color: #0f172a;
+  }
+
+  .bg-white input,
+  .bg-white textarea,
+  .bg-white select,
+  .bg-slate-50 input,
+  .bg-slate-50 textarea,
+  .bg-slate-50 select,
+  .bg-slate-100 input,
+  .bg-slate-100 textarea,
+  .bg-slate-100 select {
+    color: #0f172a !important;
+    background-color: #ffffff;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94a3b8 !important;
+    opacity: 1;
+  }
 }
 
 /* Custom smooth scrollbar */

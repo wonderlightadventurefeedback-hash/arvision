@@ -38,7 +38,7 @@ export const HomepageVideoManager: React.FC = () => {
   const [ctaLink, setCtaLink] = useState('Eyeglasses');
   const [durationMinutes, setDurationMinutes] = useState(60);
   const [order, setOrder] = useState(1);
-  const [status, setStatus] = useState<'active' | 'inactive' | 'draft'>('active');
+  const [status, setStatus] = useState<'active' | 'inactive' | 'draft' | 'scheduled'>('active');
 
   const openCreateModal = () => {
     setEditingVideo(null);
@@ -85,6 +85,7 @@ export const HomepageVideoManager: React.FC = () => {
         ctaLink,
         durationMinutes: Number(durationMinutes),
         order: Number(order),
+        priority: Number(order) || 1,
         status,
       });
     } else {
@@ -97,6 +98,7 @@ export const HomepageVideoManager: React.FC = () => {
         ctaLink,
         durationMinutes: Number(durationMinutes),
         order: Number(order),
+        priority: Number(order) || 1,
         status,
       });
     }
@@ -387,32 +389,32 @@ export const HomepageVideoManager: React.FC = () => {
               <button onClick={() => setIsEditorOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs">
+            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs text-slate-900">
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Video Title *</label>
+                <label className="block text-slate-800 font-bold mb-1">Video Title *</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Acoustic Art & Titanium Eyewear Series"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Subtitle / Description</label>
+                <label className="block text-slate-800 font-bold mb-1">Subtitle / Description</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Precision CNC milled titanium with high-index anti-glare optics."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-800 font-bold mb-1">
                   Video File Path or MP4 Stream URL *
                 </label>
                 <input
@@ -421,15 +423,15 @@ export const HomepageVideoManager: React.FC = () => {
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="/videos/hero-video.mp4 or https://..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400"
                 />
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 mt-1">
                   Supports MP4, WebM, and cloud video URLs. Muted autoplay is maintained by default.
                 </p>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">
+                <label className="block text-slate-800 font-bold mb-1">
                   Poster / Thumbnail Image URL
                 </label>
                 <input
@@ -437,37 +439,37 @@ export const HomepageVideoManager: React.FC = () => {
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
                   placeholder="https://... or /videos/hero-poster.jpg"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono focus:border-cyan-500 outline-none"
+                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Duration (Minutes)</label>
+                  <label className="block text-slate-800 font-bold mb-1">Duration (Minutes)</label>
                   <input
                     type="number"
                     min={1}
                     value={durationMinutes}
                     onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono font-medium"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Order Priority</label>
+                  <label className="block text-slate-800 font-bold mb-1">Order Priority</label>
                   <input
                     type="number"
                     min={1}
                     value={order}
                     onChange={(e) => setOrder(Number(e.target.value))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono font-medium"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Status</label>
+                  <label className="block text-slate-800 font-bold mb-1">Status</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -478,23 +480,23 @@ export const HomepageVideoManager: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">CTA Button Text</label>
+                  <label className="block text-slate-800 font-bold mb-1">CTA Button Text</label>
                   <input
                     type="text"
                     value={ctaText}
                     onChange={(e) => setCtaText(e.target.value)}
                     placeholder="e.g. Explore Collection"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium placeholder:text-slate-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">CTA Destination Link</label>
+                  <label className="block text-slate-800 font-bold mb-1">CTA Destination Link</label>
                   <input
                     type="text"
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. Eyeglasses"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -547,3 +549,4 @@ export const HomepageVideoManager: React.FC = () => {
     </div>
   );
 };
+

@@ -42,7 +42,7 @@ export const AdPosterManager: React.FC = () => {
   const [ctaText, setCtaText] = useState('Explore Collection');
   const [ctaLink, setCtaLink] = useState('Eyeglasses');
   const [priority, setPriority] = useState(1);
-  const [status, setStatus] = useState<'active' | 'inactive' | 'draft'>('active');
+  const [status, setStatus] = useState<'active' | 'inactive' | 'draft' | 'paused'>('active');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('10:00');
@@ -76,7 +76,7 @@ export const AdPosterManager: React.FC = () => {
     setEditingPoster(poster);
     setTitle(poster.title);
     setDescription(poster.description || '');
-    setImageUrl(poster.imageUrl);
+    setImageUrl(poster.imageUrl || poster.desktopImage || '');
     setMobileImage(poster.mobileImage || '');
     setTabletImage(poster.tabletImage || '');
     setCtaText(poster.ctaText || 'Shop Now');
@@ -105,6 +105,7 @@ export const AdPosterManager: React.FC = () => {
         title,
         description,
         imageUrl,
+        desktopImage: imageUrl,
         mobileImage,
         tabletImage,
         ctaText,
@@ -124,6 +125,7 @@ export const AdPosterManager: React.FC = () => {
         title,
         description,
         imageUrl,
+        desktopImage: imageUrl,
         mobileImage,
         tabletImage,
         ctaText,
@@ -371,7 +373,7 @@ export const AdPosterManager: React.FC = () => {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Morning Focus: Titanium Frames"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
                   />
                 </div>
                 <div>
@@ -379,7 +381,7 @@ export const AdPosterManager: React.FC = () => {
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                    className="w-full px-3 py-2 bg-white text-slate-900 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
                   >
                     <option value="active">Active (Published to Rotation)</option>
                     <option value="inactive">Inactive</option>
@@ -395,7 +397,7 @@ export const AdPosterManager: React.FC = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Ultra-lightweight Japanese aerospace-grade titanium frames."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                  className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
                 />
               </div>
 
@@ -413,7 +415,7 @@ export const AdPosterManager: React.FC = () => {
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="https://... or upload file"
-                      className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl font-mono text-xs focus:border-indigo-500 outline-none"
+                      className="flex-1 px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-mono text-xs border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
                     />
                     <label className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl cursor-pointer flex items-center gap-1 font-semibold">
                       <Upload className="w-3.5 h-3.5" />
@@ -450,7 +452,7 @@ export const AdPosterManager: React.FC = () => {
                         value={mobileImage}
                         onChange={(e) => setMobileImage(e.target.value)}
                         placeholder="Mobile image URL"
-                        className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-mono text-xs"
+                        className="flex-1 px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl font-mono text-xs"
                       />
                       <label className="p-2 bg-slate-200 hover:bg-slate-300 rounded-xl cursor-pointer">
                         <Upload className="w-3.5 h-3.5 text-slate-700" />
@@ -473,7 +475,7 @@ export const AdPosterManager: React.FC = () => {
                         value={tabletImage}
                         onChange={(e) => setTabletImage(e.target.value)}
                         placeholder="Tablet image URL"
-                        className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-xl font-mono text-xs"
+                        className="flex-1 px-3 py-1.5 bg-white text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-xl font-mono text-xs"
                       />
                       <label className="p-2 bg-slate-200 hover:bg-slate-300 rounded-xl cursor-pointer">
                         <Upload className="w-3.5 h-3.5 text-slate-700" />
@@ -503,7 +505,7 @@ export const AdPosterManager: React.FC = () => {
                       type="time"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
                     />
                   </div>
                   <div>
@@ -512,7 +514,7 @@ export const AdPosterManager: React.FC = () => {
                       type="time"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
                     />
                   </div>
                   <div>
@@ -521,7 +523,7 @@ export const AdPosterManager: React.FC = () => {
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
                     />
                   </div>
                   <div>
@@ -530,7 +532,7 @@ export const AdPosterManager: React.FC = () => {
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
                     />
                   </div>
                 </div>
@@ -541,7 +543,7 @@ export const AdPosterManager: React.FC = () => {
                     <select
                       value={repeatSchedule}
                       onChange={(e) => setRepeatSchedule(e.target.value as any)}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-medium border border-slate-300 rounded-xl"
                     >
                       <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
@@ -555,7 +557,7 @@ export const AdPosterManager: React.FC = () => {
                       min={1}
                       value={priority}
                       onChange={(e) => setPriority(Number(e.target.value))}
-                      className="w-full px-2.5 py-1.5 bg-white border border-slate-300 rounded-xl font-mono"
+                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
                     />
                   </div>
                   <div>
@@ -579,7 +581,7 @@ export const AdPosterManager: React.FC = () => {
                     value={ctaText}
                     onChange={(e) => setCtaText(e.target.value)}
                     placeholder="e.g. Explore Titanium"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl outline-none"
+                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl outline-none"
                   />
                 </div>
                 <div>
@@ -589,7 +591,7 @@ export const AdPosterManager: React.FC = () => {
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. Eyeglasses or Sunglasses"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl outline-none"
+                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl outline-none"
                   />
                 </div>
               </div>
@@ -711,6 +713,7 @@ export const AdPosterManager: React.FC = () => {
       {/* Device Camera Modal */}
       {isCameraOpen && (
         <AdminCameraCapture
+          isOpen={isCameraOpen}
           onCapture={(capturedDataUrl) => {
             if (cameraField === 'imageUrl') setImageUrl(capturedDataUrl);
             if (cameraField === 'mobileImage') setMobileImage(capturedDataUrl);
@@ -723,3 +726,4 @@ export const AdPosterManager: React.FC = () => {
     </div>
   );
 };
+
