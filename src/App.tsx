@@ -24,6 +24,8 @@ import { DesignBoardModal } from './components/DesignBoardModal';
 import { DynamicPromoBanner } from './components/DynamicPromoBanner';
 import { EyeglassesPLP } from './components/EyeglassesPLP';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Account & Auth Modals (Images 1, 2, 3)
 import { AuthModal } from './components/account/AuthModal';
@@ -145,6 +147,8 @@ export default function App() {
   return (
     <StoreProvider>
       <MainAppContent />
+      <Analytics />
+      <SpeedInsights />
     </StoreProvider>
   );
 }
