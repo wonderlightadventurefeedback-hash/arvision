@@ -349,9 +349,9 @@ export const AdPosterManager: React.FC = () => {
 
       {/* Editor Modal */}
       {isEditorOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
-            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[92vh]">
+            <div className="px-6 py-4 bg-slate-900 dark:bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
               <h3 className="text-base font-bold font-heading">
                 {editingPoster ? 'Edit Advertisement Poster' : 'Create Advertisement Poster'}
               </h3>
@@ -363,25 +363,25 @@ export const AdPosterManager: React.FC = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs">
+            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs text-slate-900 dark:text-slate-100">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Poster Title *</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Poster Title *</label>
                   <input
                     type="text"
                     required
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Morning Focus: Titanium Frames"
-                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium border border-slate-300 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Status</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Status</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-white text-slate-900 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-medium border border-slate-300 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none"
                   >
                     <option value="active">Active (Published to Rotation)</option>
                     <option value="inactive">Inactive</option>
@@ -391,21 +391,21 @@ export const AdPosterManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Description / Subtitle</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Description / Subtitle</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Ultra-lightweight Japanese aerospace-grade titanium frames."
-                  className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium border border-slate-300 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none"
                 />
               </div>
 
               {/* Image Upload / Capture Section */}
-              <div className="space-y-3 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                <div className="font-bold text-slate-800 text-xs">Poster Media & Camera Upload</div>
+              <div className="space-y-3 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div className="font-bold text-slate-800 dark:text-slate-200 text-xs">Poster Media & Camera Upload</div>
                 <div>
-                  <label className="block text-slate-600 font-semibold mb-1">
+                  <label className="block text-slate-600 dark:text-slate-400 font-semibold mb-1">
                     Desktop Image URL / Upload *
                   </label>
                   <div className="flex gap-2">
@@ -415,7 +415,7 @@ export const AdPosterManager: React.FC = () => {
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="https://... or upload file"
-                      className="flex-1 px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-mono text-xs border border-slate-300 rounded-xl focus:border-indigo-500 outline-none"
+                      className="flex-1 px-3 py-2 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-mono text-xs border border-slate-300 dark:border-slate-700 rounded-xl focus:border-indigo-500 outline-none"
                     />
                     <label className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl cursor-pointer flex items-center gap-1 font-semibold">
                       <Upload className="w-3.5 h-3.5" />
@@ -551,22 +551,22 @@ export const AdPosterManager: React.FC = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1">Priority Order</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Priority Order</label>
                     <input
                       type="number"
                       min={1}
                       value={priority}
                       onChange={(e) => setPriority(Number(e.target.value))}
-                      className="w-full px-2.5 py-1.5 bg-white text-slate-900 font-mono border border-slate-300 rounded-xl"
+                      className="w-full px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-mono border border-slate-300 dark:border-slate-700 rounded-xl"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-700 font-semibold mb-1">Time Zone</label>
+                    <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Time Zone</label>
                     <input
                       type="text"
                       disabled
                       value={timeZone}
-                      className="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-xl font-mono text-slate-500"
+                      className="w-full px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl font-mono text-slate-500 dark:text-slate-400"
                     />
                   </div>
                 </div>
@@ -575,38 +575,38 @@ export const AdPosterManager: React.FC = () => {
               {/* CTA Button */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">CTA Button Text</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">CTA Button Text</label>
                   <input
                     type="text"
                     value={ctaText}
                     onChange={(e) => setCtaText(e.target.value)}
                     placeholder="e.g. Explore Titanium"
-                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:border-indigo-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-700 font-bold mb-1">Destination Link</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-bold mb-1">Destination Link</label>
                   <input
                     type="text"
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. Eyeglasses or Sunglasses"
-                    className="w-full px-3 py-2 bg-white text-slate-900 placeholder:text-slate-400 font-medium border border-slate-300 rounded-xl outline-none"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-medium border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:border-indigo-500"
                   />
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsEditorOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold transition shadow-md"
+                  className="px-6 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-bold transition shadow-md cursor-pointer"
                 >
                   {editingPoster ? 'Update Poster' : 'Create & Schedule'}
                 </button>

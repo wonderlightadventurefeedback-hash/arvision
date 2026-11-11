@@ -23,6 +23,7 @@ import { AdminPortal } from './components/AdminPortal';
 import { DesignBoardModal } from './components/DesignBoardModal';
 import { DynamicPromoBanner } from './components/DynamicPromoBanner';
 import { EyeglassesPLP } from './components/EyeglassesPLP';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Account & Auth Modals (Images 1, 2, 3)
 import { AuthModal } from './components/account/AuthModal';
@@ -57,7 +58,11 @@ const MainAppContent: React.FC = () => {
   }
 
   if (activeView === 'admin-portal') {
-    return <AdminPortal />;
+    return (
+      <ErrorBoundary fallbackTitle="Admin Portal Error">
+        <AdminPortal />
+      </ErrorBoundary>
+    );
   }
 
   // Check section visibility from store context

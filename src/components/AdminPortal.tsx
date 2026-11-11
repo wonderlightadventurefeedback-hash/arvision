@@ -23,6 +23,7 @@ import { HomepageVideoManager } from './admin/HomepageVideoManager';
 import { PaymentsManager } from './admin/PaymentsManager';
 import { InventoryDesk } from './admin/InventoryDesk';
 import { OrdersManager } from './admin/OrdersManager';
+import { ErrorBoundary } from './ErrorBoundary';
 import {
   LayoutDashboard,
   Package,
@@ -858,6 +859,7 @@ export const AdminPortal: React.FC = () => {
 
         {/* Center Main Content Canvas */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 bg-gradient-to-b from-[#070710] via-[#0A0A17] to-[#070710]">
+          <ErrorBoundary fallbackTitle="Admin Section Error">
           {/* TAB 1: EXECUTIVE DASHBOARD */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
@@ -2763,6 +2765,7 @@ export const AdminPortal: React.FC = () => {
               </div>
             </div>
           )}
+          </ErrorBoundary>
         </main>
       </div>
 

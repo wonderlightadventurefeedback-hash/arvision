@@ -380,41 +380,41 @@ export const HomepageVideoManager: React.FC = () => {
 
       {/* Editor Modal */}
       {isEditorOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
-            <div className="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
+          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[92vh]">
+            <div className="px-6 py-4 bg-slate-900 dark:bg-slate-950 text-white flex items-center justify-between border-b border-slate-800">
               <h3 className="text-base font-bold font-heading">
                 {editingVideo ? 'Edit Promotional Video' : 'Add New Promotional Video'}
               </h3>
               <button onClick={() => setIsEditorOpen(false)} className="text-slate-400 hover:text-white">✕</button>
             </div>
 
-            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs text-slate-900">
+            <form onSubmit={handleSave} className="p-6 overflow-y-auto space-y-4 text-xs text-slate-900 dark:text-slate-100">
               <div>
-                <label className="block text-slate-800 font-bold mb-1">Video Title *</label>
+                <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">Video Title *</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Acoustic Art & Titanium Eyewear Series"
-                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-800 font-bold mb-1">Subtitle / Description</label>
+                <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">Subtitle / Description</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="e.g. Precision CNC milled titanium with high-index anti-glare optics."
-                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-medium focus:border-cyan-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-800 font-bold mb-1">
+                <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">
                   Video File Path or MP4 Stream URL *
                 </label>
                 <input
@@ -423,15 +423,15 @@ export const HomepageVideoManager: React.FC = () => {
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="/videos/hero-video.mp4 or https://..."
-                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
-                <p className="text-[11px] text-slate-500 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   Supports MP4, WebM, and cloud video URLs. Muted autoplay is maintained by default.
                 </p>
               </div>
 
               <div>
-                <label className="block text-slate-800 font-bold mb-1">
+                <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">
                   Poster / Thumbnail Image URL
                 </label>
                 <input
@@ -439,37 +439,37 @@ export const HomepageVideoManager: React.FC = () => {
                   value={thumbnailUrl}
                   onChange={(e) => setThumbnailUrl(e.target.value)}
                   placeholder="https://... or /videos/hero-poster.jpg"
-                  className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-mono text-xs focus:border-cyan-500 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-slate-800 font-bold mb-1">Duration (Minutes)</label>
+                  <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">Duration (Minutes)</label>
                   <input
                     type="number"
                     min={1}
                     value={durationMinutes}
                     onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-mono font-medium focus:border-cyan-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-800 font-bold mb-1">Order Priority</label>
+                  <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">Order Priority</label>
                   <input
                     type="number"
                     min={1}
                     value={order}
                     onChange={(e) => setOrder(Number(e.target.value))}
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-mono font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-mono font-medium focus:border-cyan-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-800 font-bold mb-1">Status</label>
+                  <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">Status</label>
                   <select
                     value={status}
                     onChange={(e) => setStatus(e.target.value as any)}
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-medium focus:border-cyan-500 outline-none"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -480,38 +480,38 @@ export const HomepageVideoManager: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-800 font-bold mb-1">CTA Button Text</label>
+                  <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">CTA Button Text</label>
                   <input
                     type="text"
                     value={ctaText}
                     onChange={(e) => setCtaText(e.target.value)}
                     placeholder="e.g. Explore Collection"
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium placeholder:text-slate-400"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-800 font-bold mb-1">CTA Destination Link</label>
+                  <label className="block text-slate-800 dark:text-slate-200 font-bold mb-1">CTA Destination Link</label>
                   <input
                     type="text"
                     value={ctaLink}
                     onChange={(e) => setCtaLink(e.target.value)}
                     placeholder="e.g. Eyeglasses"
-                    className="w-full px-3 py-2 bg-white text-slate-900 border border-slate-300 rounded-xl font-medium placeholder:text-slate-400"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl font-medium placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-500 outline-none"
                   />
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setIsEditorOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 rounded-xl bg-slate-900 hover:bg-black text-white font-bold transition shadow-md"
+                  className="px-6 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-cyan-500 dark:hover:bg-cyan-400 dark:text-slate-950 text-white font-bold transition shadow-md cursor-pointer"
                 >
                   {editingVideo ? 'Update Video' : 'Add to Schedule'}
                 </button>
