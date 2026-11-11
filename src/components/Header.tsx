@@ -18,6 +18,8 @@ import {
   Camera,
   Glasses,
   ArrowLeft,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { ContactLensMegaMenu } from './ContactLensMegaMenu';
 import { SunglassesMegaMenu } from './SunglassesMegaMenu';
@@ -79,6 +81,8 @@ export const Header: React.FC = () => {
     isLoggedIn,
     setIsAuthModalOpen,
     openPDP,
+    theme,
+    toggleTheme,
   } = useStore();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -548,6 +552,26 @@ export const Header: React.FC = () => {
               />
             </div>
 
+            {/* Theme Toggle (Light & Dark Mode) */}
+            <button
+              onClick={toggleTheme}
+              className={`p-1.5 rounded-full transition-all duration-300 cursor-pointer group flex items-center justify-center ${
+                isEyeglassesPage
+                  ? 'text-slate-700 hover:text-amber-500 hover:bg-slate-100'
+                  : theme === 'dark'
+                  ? 'text-amber-400 hover:text-amber-300 hover:bg-white/10'
+                  : 'text-white/90 hover:text-white hover:bg-white/10'
+              }`}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle Theme Mode"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-amber-400 group-hover:rotate-45 transition-transform" />
+              ) : (
+                <Moon className="w-5 h-5 text-white/90 group-hover:-rotate-12 transition-transform" />
+              )}
+            </button>
+
             {/* Mobile Hamburger Menu Toggle - Only shown on main pages */}
             {!isEyeglassesPage && (
               <button
@@ -620,6 +644,27 @@ export const Header: React.FC = () => {
             <span>Try @ Home</span>
             <span className="text-[10px] bg-amber-400/20 text-amber-300 px-2 py-0.5 rounded-full border border-amber-400/30">Free</span>
           </button>
+
+          {/* Appearance Mode Switcher (Light / Dark) */}
+          <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-300">Theme Mode</span>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-bold text-amber-300 transition"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span>Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-indigo-300" />
+                  <span>Dark Mode</span>
+                </>
+              )}
+            </button>
+          </div>
 
           <div className="pt-2 flex items-center gap-2">
             <button

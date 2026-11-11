@@ -43,6 +43,7 @@ const MainAppContent: React.FC = () => {
     isSunglassesMenuOpen,
     isEyeglassesMenuOpen,
     isTryAtHomeMenuOpen,
+    theme,
   } = useStore();
 
   const isAnyMegaMenuOpen =
@@ -65,7 +66,13 @@ const MainAppContent: React.FC = () => {
   const isEyeglassesCategoryPage = activeCategory === 'Eyeglasses';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white">
+    <div
+      className={`min-h-screen flex flex-col transition-colors duration-300 ${
+        theme === 'dark'
+          ? 'bg-[#0B0F17] text-slate-100 selection:bg-amber-400 selection:text-slate-950'
+          : 'bg-slate-50 text-slate-900 selection:bg-indigo-500 selection:text-white'
+      }`}
+    >
       {/* 1. Header with announcement bar & search */}
       <Header />
 

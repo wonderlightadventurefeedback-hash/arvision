@@ -103,6 +103,11 @@ interface StoreContextType {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 
+  // Theme Modes (Light & Dark)
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleTheme: () => void;
+
   // Modals & Triggers
   selectedProductForPDP: Product | null;
   setSelectedProductForPDP: (p: Product | null) => void;
@@ -643,6 +648,44 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const [activeView, setActiveViewState] = useState<'storefront' | 'design-board' | 'admin-portal'>(getInitialView);
+
+  // Theme Modes (Light & Dark)
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('ar_vision_theme') as 'light' | 'dark';
+      if (saved === 'dark' || saved === 'light') return saved;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    }
+    return 'light';
+  });
+
+  const setTheme = useCallback((newTheme: 'light' | 'dark') => {
+    setThemeState(newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('ar_vision_theme', newTheme);
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  }, [theme, setTheme]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [theme]);
 
   const setActiveView = useCallback((view: 'storefront' | 'design-board' | 'admin-portal') => {
     setActiveViewState(view);
@@ -2279,6 +2322,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setActiveCategory,
         searchQuery,
         setSearchQuery,
+        theme,
+        setTheme,
+        toggleTheme,
         selectedProductForPDP,
         setSelectedProductForPDP,
         isLensCustomizerOpen,
