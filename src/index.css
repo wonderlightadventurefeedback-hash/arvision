@@ -17,8 +17,18 @@
     font-family: var(--font-heading);
   }
 
+  /* Header search & transparent inputs: strictly borderless and transparent */
+  header input,
+  input.bg-transparent,
+  .bg-transparent input {
+    background-color: transparent !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
   /* Universal high-contrast input readability in Light Mode */
-  html:not(.dark) input,
+  html:not(.dark) input:not(.bg-transparent):not(header input),
   html:not(.dark) textarea,
   html:not(.dark) select {
     color: #0f172a !important;
@@ -178,12 +188,20 @@ html.dark .hover\:bg-slate-100:hover {
    High-contrast, dark slate background with crisp readable text.
    Eliminates white-on-white text collisions completely.
 */
-html.dark input,
+html.dark input:not(.bg-transparent):not(header input),
 html.dark textarea,
 html.dark select {
   background-color: #1e293b !important;
   color: #f8fafc !important;
   border-color: #334155 !important;
+}
+
+html.dark header input,
+html.dark input.bg-transparent {
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 html.dark input::placeholder,

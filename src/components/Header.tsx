@@ -346,17 +346,17 @@ export const Header: React.FC = () => {
 
           {/* Right: Search, Wishlist, Cart & Profile Actions */}
           <div className={`flex items-center gap-2.5 sm:gap-6 ${isEyeglassesPage ? 'text-slate-800' : 'text-white'}`}>
-            {/* Search Input Bar (matching screenshot layout) */}
+            {/* Search Input Bar (completely borderless and seamless) */}
             <div className="relative flex items-center">
               <div
-                className={`flex items-center gap-1.5 sm:gap-2 border-b transition-all duration-300 pb-0.5 ${
+                className={`flex items-center gap-1.5 sm:gap-2 transition-all duration-300 py-1 px-1.5 rounded-full ${
                   isEyeglassesPage
                     ? isSearchFocused || searchQuery
-                      ? 'border-slate-800 w-28 sm:w-60 bg-slate-100 px-1.5 sm:px-2 rounded-t'
-                      : 'border-slate-300 hover:border-slate-600 w-16 sm:w-32'
+                      ? 'w-28 sm:w-60 bg-slate-100/90'
+                      : 'w-16 sm:w-32 hover:bg-slate-100/50'
                     : isSearchFocused || searchQuery
-                    ? 'border-white w-28 sm:w-60 bg-black/20 px-1.5 sm:px-2 rounded-t'
-                    : 'border-white/40 hover:border-white/80 w-16 sm:w-32'
+                    ? 'w-28 sm:w-60 bg-white/10'
+                    : 'w-16 sm:w-32 hover:bg-white/5'
                 }`}
               >
                 <Search
@@ -388,11 +388,17 @@ export const Header: React.FC = () => {
                   onBlur={() => {
                     setTimeout(() => setIsSearchFocused(false), 250);
                   }}
-                  className={`bg-transparent text-xs sm:text-sm outline-none w-full ${
+                  className={`bg-transparent !bg-transparent text-xs sm:text-sm outline-none border-none !border-none !shadow-none w-full ${
                     isEyeglassesPage
-                      ? 'text-slate-900 placeholder-slate-400'
-                      : 'text-white placeholder-white/60'
+                      ? 'text-slate-900 !text-slate-900 placeholder:text-slate-400 placeholder:!text-slate-400'
+                      : 'text-white !text-white placeholder:text-white/60 placeholder:!text-white/60'
                   }`}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    boxShadow: 'none',
+                  }}
                 />
                 {searchQuery && (
                   <button
