@@ -24,6 +24,7 @@ import { PaymentsManager } from './admin/PaymentsManager';
 import { InventoryDesk } from './admin/InventoryDesk';
 import { OrdersManager } from './admin/OrdersManager';
 import { ErrorBoundary } from './ErrorBoundary';
+import { SAMPLE_TEMPLATE_PRODUCTS } from '../data/mockData';
 import {
   LayoutDashboard,
   Package,
@@ -462,6 +463,21 @@ export const AdminPortal: React.FC = () => {
       addProduct(newProd);
     }
     setIsProductModalOpen(false);
+  };
+
+  const handleAddSampleFrame = () => {
+    if (!SAMPLE_TEMPLATE_PRODUCTS || SAMPLE_TEMPLATE_PRODUCTS.length === 0) return;
+    const template = SAMPLE_TEMPLATE_PRODUCTS[0];
+    const newProd: Product = {
+      ...template,
+      id: `prod-${Date.now()}`,
+      sku: `AR-SIGN-${Math.floor(1000 + Math.random() * 9000)}`,
+      variants: template.variants.map((v, i) => ({
+        ...v,
+        id: `v-${Date.now()}-${i}`,
+      })),
+    };
+    addProduct(newProd);
   };
 
   // Open Banner Modal
@@ -1240,12 +1256,36 @@ export const AdminPortal: React.FC = () => {
 
                 <div className="flex items-center gap-2.5">
                   <button
+                    onClick={handleAddSampleFrame}
+                    className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
+                    title="Quickly insert a sample frame with ready-to-test specs"
+                  >
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <span>Add Sample Frame</span>
+                  </button>
+
+                  <button
                     onClick={handleOpenAddProduct}
                     className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white text-xs font-bold shadow-[0_0_20px_rgba(168,85,247,0.35)] transition flex items-center gap-1.5 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add New Product</span>
                   </button>
+
+                  {products.length > 0 && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to remove all ${products.length} products from the store catalog?`)) {
+                          products.forEach((p) => deleteProduct(p.id));
+                        }
+                      }}
+                      className="px-3 py-2 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+                      title="Clear all products from the store"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Clear Catalog</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -1295,6 +1335,17 @@ export const AdminPortal: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
+                      {filteredProducts.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="text-center py-12 text-slate-400">
+                            <Package className="w-10 h-10 mx-auto text-slate-600 mb-2" />
+                            <p className="text-sm font-semibold text-slate-300">No products found in catalog</p>
+                            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                              Click "Add New Product" to list eyewear with custom specs, or "Add Sample Frame" to quickly insert a template frame.
+                            </p>
+                          </td>
+                        </tr>
+                      )}
                       {filteredProducts.map((product) => {
                         const totalStock = product.variants.reduce((s, v) => s + v.stock, 0);
                         const unitsSold = getUnitsSoldForProduct(product.id);

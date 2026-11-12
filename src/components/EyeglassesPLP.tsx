@@ -104,12 +104,16 @@ export const EyeglassesPLP: React.FC = () => {
     return list; // recommended default
   }, [eyeglassesProducts, sortBy]);
 
-  // Calculate dynamic items count to show in header matching user screenshot
-  // Base catalog number 2566 + any items added by admin
-  const totalItemsCount = useMemo(() => {
-    const liveEyeglassesCount = products.filter((p) => p.category === 'Eyeglasses' && p.isPublished).length;
-    return 2558 + liveEyeglassesCount;
+  // Count of admin listed live eyeglasses
+  const liveEyeglassesCount = useMemo(() => {
+    return products.filter((p) => p.category === 'Eyeglasses' && p.isPublished).length;
   }, [products]);
+
+  // Calculate dynamic items count to show in header matching user screenshot
+  // Base catalog number 2558 + any items added by admin
+  const totalItemsCount = useMemo(() => {
+    return 2558 + liveEyeglassesCount;
+  }, [liveEyeglassesCount]);
 
   // Active filters count
   const activeFiltersCount = useMemo(() => {
@@ -345,16 +349,29 @@ export const EyeglassesPLP: React.FC = () => {
         {sortedProducts.length === 0 ? (
           <div className="py-20 text-center space-y-4">
             <ShoppingBag className="w-12 h-12 text-slate-300 mx-auto" />
-            <h3 className="text-lg font-bold text-slate-800">No eyeglasses match current filters</h3>
+            <h3 className="text-lg font-bold text-slate-800">
+              {liveEyeglassesCount === 0 ? 'No Eyeglasses Listed Yet' : 'No eyeglasses match current filters'}
+            </h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Try adjusting your filter options or search term to discover other frames.
+              {liveEyeglassesCount === 0
+                ? 'Demo products have been cleared. Add your custom optical frames from the Admin Portal.'
+                : 'Try adjusting your filter options or search term to discover other frames.'}
             </p>
-            <button
-              onClick={resetFilters}
-              className="px-5 py-2.5 rounded-full bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
-            >
-              Reset All Filters
-            </button>
+            {liveEyeglassesCount === 0 ? (
+              <button
+                onClick={() => setActiveView('admin-portal')}
+                className="px-5 py-2.5 rounded-full bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
+              >
+                Open Admin Portal
+              </button>
+            ) : (
+              <button
+                onClick={resetFilters}
+                className="px-5 py-2.5 rounded-full bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition cursor-pointer"
+              >
+                Reset All Filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-6">

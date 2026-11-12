@@ -98,7 +98,7 @@ export const DesignBoardModal: React.FC = () => {
 
     setTimeout(() => {
       if (target === 'lens-wizard' || target.includes('lens')) {
-        openLensCustomizer(products[0]);
+        if (products[0]) openLensCustomizer(products[0]);
       } else if (target === 'cart') {
         setIsCartOpen(true);
       } else if (target.includes('checkout') || target === 'invoice-view') {
@@ -112,7 +112,7 @@ export const DesignBoardModal: React.FC = () => {
       } else if (target.includes('admin')) {
         setActiveView('admin-portal');
       } else if (target.includes('pdp')) {
-        openPDP(products[0]);
+        if (products[0]) openPDP(products[0]);
       }
     }, 150);
   };

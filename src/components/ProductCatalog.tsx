@@ -9,6 +9,7 @@ import {
   Scale,
   X,
   Filter,
+  Plus,
 } from 'lucide-react';
 import { FrameShape, FrameMaterial, Gender, FrameSize } from '../types';
 
@@ -22,6 +23,7 @@ export const ProductCatalog: React.FC = () => {
     comparisonList,
     setIsCompareModalOpen,
     clearCompare,
+    setActiveView,
   } = useStore();
 
   // Filters state
@@ -348,20 +350,32 @@ export const ProductCatalog: React.FC = () => {
             </div>
           )}
           {filteredProducts.length === 0 ? (
-            <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-slate-200 p-8">
+            <div className="py-20 text-center space-y-4 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs">
               <Search className="w-12 h-12 text-slate-300 mx-auto" />
               <h4 className="text-base font-bold text-slate-800">
-                No matching optical frames found
+                {products.length === 0 ? 'No Products in Storefront Yet' : 'No matching optical frames found'}
               </h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Try loosening your filters or resetting price range to see our full inventory.
+                {products.length === 0
+                  ? 'All demo products were removed. Add your real products, configure pricing and manage stock from the Admin Portal.'
+                  : 'Try loosening your filters or resetting price range to see our full inventory.'}
               </p>
-              <button
-                onClick={clearAllFilters}
-                className="py-2 px-5 rounded-xl bg-slate-900 text-white font-bold text-xs"
-              >
-                Clear All Filters
-              </button>
+              {products.length === 0 ? (
+                <button
+                  onClick={() => setActiveView('admin-portal')}
+                  className="py-2.5 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition cursor-pointer shadow-md inline-flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4 text-cyan-400" />
+                  <span>Open Admin Portal</span>
+                </button>
+              ) : (
+                <button
+                  onClick={clearAllFilters}
+                  className="py-2 px-5 rounded-xl bg-slate-900 text-white font-bold text-xs cursor-pointer hover:bg-slate-800 transition"
+                >
+                  Clear All Filters
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

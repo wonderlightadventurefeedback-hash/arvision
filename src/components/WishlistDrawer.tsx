@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStore } from '../context/StoreContext';
+import { Product } from '../types';
 import {
   X,
   Heart,
@@ -27,10 +28,12 @@ export const WishlistDrawer: React.FC = () => {
 
   const wishlistedProducts = products.filter((p) => wishlist.includes(p.id));
 
-  const handleAddToCart = (product: typeof products[0]) => {
-    const defaultVariant = product.variants[0];
-    addToCart(product, defaultVariant);
-    setIsCartOpen(true);
+  const handleAddToCart = (product: Product) => {
+    const defaultVariant = product.variants?.[0];
+    if (defaultVariant) {
+      addToCart(product, defaultVariant);
+      setIsCartOpen(true);
+    }
   };
 
   return (

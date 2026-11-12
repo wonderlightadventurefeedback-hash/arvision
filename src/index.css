@@ -19,12 +19,21 @@
 
   /* Header search & transparent inputs: strictly borderless and transparent */
   header input,
+  header input:focus,
   input.bg-transparent,
-  .bg-transparent input {
+  input.bg-transparent:focus,
+  .bg-transparent input,
+  .bg-transparent input:focus,
+  input[placeholder="Search"],
+  input[placeholder="Search"]:focus {
     background-color: transparent !important;
+    background: transparent !important;
     border: none !important;
+    border-bottom: none !important;
     outline: none !important;
     box-shadow: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
   }
 
   /* Universal high-contrast input readability in Light Mode */
@@ -35,13 +44,13 @@
     background-color: #ffffff;
   }
 
-  html:not(.dark) .bg-white input,
+  html:not(.dark) .bg-white input:not(header input):not(.bg-transparent),
   html:not(.dark) .bg-white textarea,
   html:not(.dark) .bg-white select,
-  html:not(.dark) .bg-slate-50 input,
+  html:not(.dark) .bg-slate-50 input:not(header input):not(.bg-transparent),
   html:not(.dark) .bg-slate-50 textarea,
   html:not(.dark) .bg-slate-50 select,
-  html:not(.dark) .bg-slate-100 input,
+  html:not(.dark) .bg-slate-100 input:not(header input):not(.bg-transparent),
   html:not(.dark) .bg-slate-100 textarea,
   html:not(.dark) .bg-slate-100 select {
     color: #0f172a !important;
@@ -218,10 +227,10 @@ html.dark select:focus {
 }
 
 /* Dark mode inputs inside dark containers */
-html.dark .bg-slate-900 input,
-html.dark .bg-slate-950 input,
-html.dark .bg-\[\#070710\] input,
-html.dark .bg-\[\#0B0B18\] input {
+html.dark .bg-slate-900 input:not(header input):not(.bg-transparent),
+html.dark .bg-slate-950 input:not(header input):not(.bg-transparent),
+html.dark .bg-\[\#070710\] input:not(header input):not(.bg-transparent),
+html.dark .bg-\[\#0B0B18\] input:not(header input):not(.bg-transparent) {
   color: #f8fafc !important;
   background-color: #1e293b !important;
 }

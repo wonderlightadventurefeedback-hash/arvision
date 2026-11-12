@@ -36,6 +36,7 @@ import {
 } from '../types';
 import {
   INITIAL_PRODUCTS,
+  SAMPLE_TEMPLATE_PRODUCTS,
   INITIAL_HERO_SLIDES,
   INITIAL_FESTIVAL_CAMPAIGNS,
   INITIAL_HOMEPAGE_SECTIONS,
@@ -292,18 +293,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // 1. Products State
   const [products, setProducts] = useState<Product[]>(() => {
     try {
-      const saved = localStorage.getItem('wonderlix_products') || localStorage.getItem('arvision_products');
+      const saved = localStorage.getItem('arvision_products') || localStorage.getItem('wonderlix_products');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          const existingIds = new Set(parsed.map((p: any) => p.id));
-          const missing = INITIAL_PRODUCTS.filter((p) => !existingIds.has(p.id));
-          const allProds = missing.length > 0 ? [...missing, ...parsed] : parsed;
-          return allProds.map((p: any) => ({
-            ...p,
-            name: p.name?.replace(/Lenskart/gi, 'AR-Vision Eyecare') || p.name,
-            brand: p.brand?.replace(/Lenskart/gi, 'AR-Vision Eyecare') || p.brand,
-          }));
+          // Purge legacy hardcoded demo product IDs so that only actual admin-created products exist
+          const legacyDemoPrefixes = ['prod-hustlr', 'prod-air', 'prod-jj', 'prod-eye', 'prod-sun'];
+          const legacyDemoExact = new Set([
+            'prod-1', 'prod-2', 'prod-3', 'prod-4', 'prod-5', 'prod-6',
+            'prod-7', 'prod-8', 'prod-9', 'prod-10', 'prod-11', 'prod-12',
+            'prod-13', 'prod-14', 'prod-15', 'prod-16'
+          ]);
+          const isDemo = (id: string) =>
+            typeof id === 'string' && (legacyDemoExact.has(id) || legacyDemoPrefixes.some((p) => id.startsWith(p)));
+
+          const cleanProducts = parsed.filter((p: any) => p && p.id && !isDemo(p.id));
+          return cleanProducts;
         }
       }
       return INITIAL_PRODUCTS;
@@ -457,8 +462,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         items: [
           {
             id: 'item-demo-1',
-            product: INITIAL_PRODUCTS[0],
-            selectedVariant: INITIAL_PRODUCTS[0].variants[0],
+            product: SAMPLE_TEMPLATE_PRODUCTS[0],
+            selectedVariant: SAMPLE_TEMPLATE_PRODUCTS[0].variants[0],
             quantity: 1,
             unitPrice: 2299,
             totalPrice: 2299,
@@ -516,8 +521,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         items: [
           {
             id: 'item-demo-2',
-            product: INITIAL_PRODUCTS[1],
-            selectedVariant: INITIAL_PRODUCTS[1].variants[0],
+            product: SAMPLE_TEMPLATE_PRODUCTS[0],
+            selectedVariant: SAMPLE_TEMPLATE_PRODUCTS[0].variants[0],
             quantity: 2,
             unitPrice: 1799,
             totalPrice: 3598,

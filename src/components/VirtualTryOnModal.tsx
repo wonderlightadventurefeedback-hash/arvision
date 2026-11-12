@@ -32,6 +32,7 @@ export const VirtualTryOnModal: React.FC = () => {
     setSelectedProductForTryOn,
     products,
     openLensCustomizer,
+    setActiveView,
   } = useStore();
 
   const [mode, setMode] = useState<'camera' | 'models' | 'upload'>('models');
@@ -53,7 +54,7 @@ export const VirtualTryOnModal: React.FC = () => {
   const [snapshotTaken, setSnapshotTaken] = useState<string | null>(null);
 
   const currentProduct = selectedProductForTryOn || products[0];
-  const currentVariant: ProductVariant = currentProduct?.variants[selectedVariantIndex] || currentProduct?.variants[0];
+  const currentVariant: ProductVariant | undefined = currentProduct?.variants?.[selectedVariantIndex] || currentProduct?.variants?.[0];
 
   // Camera stream handler
   useEffect(() => {
@@ -182,6 +183,39 @@ export const VirtualTryOnModal: React.FC = () => {
   };
 
   if (!isTryOnModalOpen) return null;
+
+  if (!currentProduct) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+        <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center text-white shadow-2xl space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-400 mx-auto flex items-center justify-center">
+            <Camera className="w-6 h-6" />
+          </div>
+          <h3 className="text-lg font-bold font-heading">No Frames Available for 3D Try-On</h3>
+          <p className="text-xs text-slate-400">
+            Please add eyewear products from the Admin Portal to experience live 3D webcam try-on.
+          </p>
+          <div className="flex gap-2 justify-center pt-2">
+            <button
+              onClick={() => setIsTryOnModalOpen(false)}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition cursor-pointer"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => {
+                setIsTryOnModalOpen(false);
+                setActiveView('admin-portal');
+              }}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-xs font-bold text-white transition cursor-pointer"
+            >
+              Open Admin Portal
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto">

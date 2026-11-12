@@ -169,7 +169,7 @@ export const Footer: React.FC = () => {
               </button>
             </li>
             <li>
-              <button onClick={() => openPDP(products[0])} className="hover:text-white transition">
+              <button onClick={() => { if (products[0]) openPDP(products[0]); }} className="hover:text-white transition">
                 Precision Optical Fit & Loupe
               </button>
             </li>
