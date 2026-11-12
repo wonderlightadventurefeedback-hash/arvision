@@ -395,12 +395,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
     try {
       const saved = localStorage.getItem('wonderlix_activity_logs');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter((l: ActivityLog) => !l.id?.startsWith('log-')) : [];
-      }
-    } catch {}
-    return INITIAL_ACTIVITY_LOGS;
+      return saved ? JSON.parse(saved) : INITIAL_ACTIVITY_LOGS;
+    } catch {
+      return INITIAL_ACTIVITY_LOGS;
+    }
   });
 
   // 9. Coupons
@@ -435,16 +433,113 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [stores] = useState<StoreLocation[]>(MOCK_STORES);
 
-  // 12. Orders State (Production: clean state, filtering out any mock demo orders)
+  // 12. Orders State
   const [orders, setOrders] = useState<Order[]>(() => {
     try {
-      const saved = localStorage.getItem('arvision_orders') || localStorage.getItem('wonderlix_orders');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter((o: Order) => !o.id?.startsWith('ord-demo-')) : [];
-      }
+      const saved = localStorage.getItem('wonderlix_orders') || localStorage.getItem('arvision_orders');
+      if (saved) return JSON.parse(saved);
     } catch {}
-    return [];
+    // Seed initial realistic order for demo tracking
+    return [
+      {
+        id: 'ord-demo-1',
+        orderNumber: 'WND-2026-8849',
+        createdAt: '2026-10-30T14:32:00Z',
+        customerName: 'Priya Sharma',
+        customerEmail: 'priya.sharma@example.com',
+        customerPhone: '+91 98765 43210',
+        shippingAddress: {
+          addressLine: 'Apt 402, Sea Green Heights, Bandra West',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400050',
+        },
+        items: [
+          {
+            id: 'item-demo-1',
+            product: INITIAL_PRODUCTS[0],
+            selectedVariant: INITIAL_PRODUCTS[0].variants[0],
+            quantity: 1,
+            unitPrice: 2299,
+            totalPrice: 2299,
+            lensSelection: {
+              visionType: 'single_vision',
+              visionTypeName: 'Single Vision Distance',
+              lensType: 'blue_shield',
+              lensTypeName: 'AR Blue Shield Pro',
+              lensIndex: '1.60_thin',
+              lensIndexName: 'Thin 1.60 Hi-Index (+₹890)',
+              price: 890,
+              prescriptionDetails: {
+                method: 'manual',
+                odSph: '-1.50',
+                odCyl: '-0.50',
+                odAxis: '90',
+                osSph: '-1.75',
+                osCyl: '-0.25',
+                osAxis: '85',
+                pd: '63',
+              },
+            },
+          },
+        ],
+        subtotal: 3189,
+        discount: 400,
+        tax: 502,
+        shipping: 0,
+        totalAmount: 3291,
+        paymentMethod: 'UPI',
+        paymentStatus: 'Paid',
+        orderStatus: 'Lens Preparation',
+        statusHistory: [
+          { status: 'Confirmed', timestamp: '30 Oct 2026, 02:32 PM', note: 'Payment verified via UPI' },
+          { status: 'Prescription Review', timestamp: '30 Oct 2026, 04:15 PM', note: 'Prescription verified by Senior Optometrist' },
+          { status: 'Processing', timestamp: '31 Oct 2026, 10:00 AM', note: 'Titanium frame picked from central inventory' },
+          { status: 'Lens Preparation', timestamp: '01 Nov 2026, 09:30 AM', note: 'High-index 1.60 blue cut lenses precision edged on German CNC' },
+        ],
+        trackingNumber: 'BLUEDART-WND98234',
+        prescriptionStatus: 'Verified',
+      },
+      {
+        id: 'ord-demo-2',
+        orderNumber: 'WND-2026-9214',
+        createdAt: '2026-11-01T10:15:00Z',
+        customerName: 'Rahul Kapoor',
+        customerEmail: 'rahul.kapoor@example.com',
+        customerPhone: '+91 98220 11223',
+        shippingAddress: {
+          addressLine: 'Villa 12, Indiranagar',
+          city: 'Bengaluru',
+          state: 'Karnataka',
+          pincode: '560038',
+        },
+        items: [
+          {
+            id: 'item-demo-2',
+            product: INITIAL_PRODUCTS[1],
+            selectedVariant: INITIAL_PRODUCTS[1].variants[0],
+            quantity: 2,
+            unitPrice: 1799,
+            totalPrice: 3598,
+          },
+        ],
+        subtotal: 3598,
+        discount: 360,
+        tax: 582,
+        shipping: 0,
+        totalAmount: 3820,
+        paymentMethod: 'Card',
+        paymentStatus: 'Paid',
+        orderStatus: 'Dispatched',
+        statusHistory: [
+          { status: 'Confirmed', timestamp: '01 Nov 2026, 10:15 AM', note: 'Credit card payment confirmed' },
+          { status: 'Processing', timestamp: '01 Nov 2026, 01:00 PM', note: 'Acetate frames packed in protective hardshell case' },
+          { status: 'Dispatched', timestamp: '02 Nov 2026, 09:00 AM', note: 'Handed over to Express Courier (Delhivery AWB 892019)' },
+        ],
+        trackingNumber: 'DELHIVERY-WND34812',
+        prescriptionStatus: 'Not Required',
+      },
+    ];
   });
 
   const [appointments, setAppointments] = useState<EyeTestAppointment[]>(() => {
@@ -458,13 +553,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [htoAppointments, setHtoAppointments] = useState<HomeTryOnAppointment[]>(() => {
     try {
-      const saved = localStorage.getItem('arvision_hto_appointments') || localStorage.getItem('wonderlix_hto_appointments');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter((a: HomeTryOnAppointment) => !a.id?.startsWith('HTO-2026-9284')) : [];
-      }
-    } catch {}
-    return INITIAL_HTO_APPOINTMENTS;
+      const saved = localStorage.getItem('wonderlix_hto_appointments') || localStorage.getItem('arvision_hto_appointments');
+      return saved ? JSON.parse(saved) : INITIAL_HTO_APPOINTMENTS;
+    } catch {
+      return INITIAL_HTO_APPOINTMENTS;
+    }
   });
 
   const [fieldExecutives, setFieldExecutives] = useState<FieldExecutive[]>(INITIAL_FIELD_EXECUTIVES);
@@ -687,27 +780,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedProductForTryOn, setSelectedProductForTryOn] = useState<Product | null>(null);
   const [designBoardInitialSlide, setDesignBoardInitialSlide] = useState<number | null>(null);
 
-  // Customer User Profile & Auth (Production: clean guest state until user signs in)
+  // Customer User Profile & Auth (Images 1, 2, 3)
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     try {
-      const saved = localStorage.getItem('arvision_user_profile') || localStorage.getItem('wonderlix_user_profile');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Exclude dummy user profile with demo id
-        if (parsed && parsed.id && !parsed.id.startsWith('usr-hitakankshi-') && !parsed.id.startsWith('usr-demo-')) {
-          return parsed;
-        }
-      }
-    } catch {}
-    return INITIAL_USER_PROFILE;
+      const saved = localStorage.getItem('wonderlix_user_profile') || localStorage.getItem('arvision_user_profile');
+      return saved ? JSON.parse(saved) : INITIAL_USER_PROFILE;
+    } catch {
+      return INITIAL_USER_PROFILE;
+    }
   });
 
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('arvision_is_logged_in') || localStorage.getItem('wonderlix_is_logged_in');
-      return saved !== null ? JSON.parse(saved) : false;
+      const saved = localStorage.getItem('wonderlix_is_logged_in');
+      return saved !== null ? JSON.parse(saved) : true;
     } catch {
-      return false;
+      return true;
     }
   });
 
@@ -747,12 +835,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [paymentTransactions, setPaymentTransactions] = useState<PaymentTransaction[]>(() => {
     try {
       const saved = localStorage.getItem('arvision_payment_transactions');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter((tx: PaymentTransaction) => !tx.id?.startsWith('TXN-2026-9812')) : [];
-      }
-    } catch {}
-    return INITIAL_PAYMENT_TRANSACTIONS;
+      return saved ? JSON.parse(saved) : INITIAL_PAYMENT_TRANSACTIONS;
+    } catch {
+      return INITIAL_PAYMENT_TRANSACTIONS;
+    }
   });
 
   // =========================================================================
@@ -761,12 +847,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(() => {
     try {
       const saved = localStorage.getItem('arvision_inventory_movements');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return Array.isArray(parsed) ? parsed.filter((m: InventoryMovement) => !m.id?.startsWith('mov-') && !m.id?.startsWith('INV-MOV-')) : [];
-      }
-    } catch {}
-    return INITIAL_INVENTORY_MOVEMENTS;
+      return saved ? JSON.parse(saved) : INITIAL_INVENTORY_MOVEMENTS;
+    } catch {
+      return INITIAL_INVENTORY_MOVEMENTS;
+    }
   });
 
   // =========================================================================
